@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -14,58 +14,80 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [notification, setNotification] = useState("");
 
   const userLogin = async () => {
-    try{
-      const response = await fetch("http://localhost:8000/auth/login",{
-        method:'POST',
-        headers : {
-          'Content-Type' : 'application/json'
+    setError("")
+    if(!email.trim() || !password.trim()){
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        body:JSON.stringify({username, password})
+        body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
 
-      if (!response.ok) setError(data.error);
-      
+      if (!response.ok) {
+        setError(data.error)
+        setPassword("");
+        return;
+      };
 
-    }catch(error){
+      setPassword("");
+      setEmail("")
+      setNotification("Login Successful")
+    } catch (error) {
       console.error(error);
+      setPassword("");
       setError("System Failure, try again later. ");
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) =>{
+    e.preventDefault();
+    userLogin();
+
   }
 
-
-
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 px-4">
-      <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/80 backdrop-blur">
+    <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 px-4">
+      {notification && <div className="text-green-500 mb-8">{notification}</div>}
+      {error && <div className="text-red-500 mb-8">{error}</div>}
+      <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/80 backdrop-blur hover:border-zinc-600 transition ease-linear duration-300">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-white text-center">Welcome Back</CardTitle>
+          <CardTitle className="text-2xl text-white text-center underline-offset-4 underline">
+            Welcome Back
+          </CardTitle>
           <CardDescription className="text-zinc-400 text-center">
             Log In To Your Account
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action="/auth/login" method="POST" className="space-y-5">
-            {/* Username */}
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {/* email */}
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-zinc-300">
-                Username
+              <Label htmlFor="email" className="text-zinc-300">
+                Email
               </Label>
               <Input
-                id="username"
-                name="username"
+                id="email"
+                name="email"
                 type="text"
-                placeholder="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value); 
+                  setError("")
+                }}
                 className="bg-zinc-950 border-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-zinc-600"
                 required
               />
@@ -84,30 +106,29 @@ export default function Login() {
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
+                  setError("")
                 }}
                 className="bg-zinc-950 border-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-zinc-600"
+                required
               />
-
             </div>
             <Button
               type="submit"
-              className="w-full bg-white text-black cursor-pointer hover:bg-zinc-500 transition ease-linear duration-500"
-              onClick={userLogin}
+              className="w-full bg-white mt-2 text-black cursor-pointer hover:bg-zinc-500 transition ease-linear duration-500"
             >
               Log In
             </Button>
           </form>
-                {/* Register link */}
-            <p className="mt-6 text-center text-sm text-zinc-400">
-                Don&apos;t have an account?{' '}
-                <Link
-                href="/register"
-                className="text-white underline-offset-4 hover:underline"
-                >
-                    Register
-                </Link>
-            </p>  
-
+          {/* Register link */}
+          <p className="mt-6 text-center text-sm text-zinc-400">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/auth/register"
+              className="text-white underline-offset-4 hover:underline"
+            >
+              Register
+            </Link>
+          </p>
         </CardContent>
       </Card>
     </div>
