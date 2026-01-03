@@ -111,7 +111,8 @@ router.post(
     try {
       const { email, password } = req.body;
 
-      const user = await User.findOne({ email: email.trim().toLowerCase() });
+      // include password explicitly because schema sets `select: false`
+      const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+password');
 
       if (!user) {
         return res.status(400).json({
