@@ -22,6 +22,7 @@ export default function Login() {
 
   const userLogin = async () => {
     setError("")
+    setNotification("")
     if(!email.trim() || !password.trim()){
       return;
     }
@@ -50,7 +51,7 @@ export default function Login() {
 
       setPassword("");
       setEmail("")
-      setNotification("Login Successful")
+      setNotification(data?.msg)
     } catch (error) {
       console.error(error);
       setPassword("");
