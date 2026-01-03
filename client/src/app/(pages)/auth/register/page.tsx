@@ -39,12 +39,14 @@ export default function Register() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ username, email, password, confirmPassword }),
       });
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error);
+        const errMsg = data?.error || (Array.isArray(data?.errors) ? data.errors[0]?.msg : null) || data?.msg || 'Request failed';
+        setError(errMsg);
         setPassword("");
         setConfirmPassword("");
         return;
@@ -54,6 +56,7 @@ export default function Register() {
       setConfirmPassword("");
       setPassword("");
       setNotification("Register Successful");
+      console.log("log in successful")
     } catch (error) {
       console.error(error);
       setPassword("");

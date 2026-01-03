@@ -1,23 +1,20 @@
+const express = require('express');
 const User = require("../models/User");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
 
 
-// user log
-// router.get('auth/login', (req,res)=>{
-//     if(req.session.user) return
-// })
 router.post(
-  "auth/login/",
-  body("username").notEmpty.withMessage("Enter your username"),
+  "/register",
+  body("username").notEmpty().withMessage("Enter your username"),
   body("username")
     .isLength({ min: 3, max: 15 })
     .withMessage("Must be between 3-15 characters"),
   body("email")
-    .notEmpty.withMessage("Enter email")
-    .isEmail.withMessage("Enter valid email"),
-  body("password").notEmpty.withMessage("Enter a strong password"),
+    .notEmpty().withMessage("Enter email")
+    .isEmail().withMessage("Enter valid email"),
+  body("password").notEmpty().withMessage("Enter a strong password"),
   body("password")
     .isLength({ min: 8, max: 32 })
     .withMessage("Password must contain at least one uppercase letter")
@@ -27,7 +24,7 @@ router.post(
     .withMessage("Password must constain at least one number")
     .matches(/[^A-Za-z0-9]/)
     .withMessage("Password must contain at least one special character"),
-  body("confirmPassword").notEmpty.withMessage("Enter a strong password"),
+  body("confirmPassword").notEmpty().withMessage("Enter a strong password"),
 
   async (req, res) => {
     const errors = validationResult(req);
@@ -73,6 +70,8 @@ router.post(
         password: hash,
       });
 
+      console.log(`User created, here are the details:\nUser: ${username}\nEmail:${email}\nPassword: ${hash}`)
+
       req.session.user = {
         _id: newUser._id,
         username: newUser.username,
@@ -94,13 +93,13 @@ router.post(
 );
 
 router.post(
-  "auth/login/",
+  "/login/",
   body("email")
     .notEmpty()
     .withMessage("Enter Your Email")
     .isEmail()
     .withMessage("Invalid Email Entered"),
-  body("password").notEmpty.withMessage("Enter Your Password"),
+  body("password").notEmpty().withMessage("Enter Your Password"),
 
   async (req, res) => {
     const errors = validationResult(req);

@@ -27,17 +27,23 @@ export default function Login() {
     }
 
     try {
+      console.log("Submitting login request")
       const response = await fetch("http://localhost:8000/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
+      
+      console.log("Response received:", response.status);
 
       if (!response.ok) {
-        setError(data.error)
+        // server sends `errors` (array) or a message; normalize it
+        const errMsg = data?.error || (Array.isArray(data?.errors) ? data.errors[0]?.msg : null) || data?.msg || 'Request failed';
+        setError(errMsg);
         setPassword("");
         return;
       };

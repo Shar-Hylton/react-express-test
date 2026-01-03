@@ -24,7 +24,7 @@ const userSchema = mongoose.Schema(
       required: true,
       select: false, // prevents hashes from leaking
       minlength: 8,
-      maxlength: 32,
+      maxlength: 128,
       validate: {
         validator: function (value) {
           return /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/.test(
