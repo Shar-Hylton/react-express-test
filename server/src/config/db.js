@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
+    if (!process.env.MONGODBSTRING) {
+        console.warn('MONGODBSTRING is not defined — skipping database connection.');
+        return;
+    }
+
     try{
         console.log("Attempting database connection")
         await mongoose.connect(process.env.MONGODBSTRING);
@@ -8,8 +13,8 @@ const connectDB = async () => {
         console.log("Database Connected Successfully!")
 
     }catch(error){
-        console.log("database connection failed", error);
-        process.exit(1);
+        console.error("database connection failed", error);
+        // Don't exit the process here to allow development/test environments to continue running.
     }
     
 }
