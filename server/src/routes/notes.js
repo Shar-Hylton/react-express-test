@@ -58,7 +58,7 @@ router.post(
 
 router.post(
   "/edit/:id",
-  isLogin,
+  ensureLogin,
   owner,
   body("title")
     .notEmpty()
@@ -107,3 +107,5 @@ router.post('/delete/:id',ensureLogin, owner, async (req,res)=>{
         return res.status(500).json({errors: [{msg: "Failed to delete note"}]})
     }
 })
+
+module.exports = router;

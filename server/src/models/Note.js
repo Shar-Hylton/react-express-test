@@ -7,14 +7,14 @@ const noteSchema = mongoose.Schema(
       minlength: 15,
       maxlength: 50,
       trim: true,
-      required,
+      required: true,
     },
 
     content: {
       type: String,
       maxlength: 1024,
       minlength: 250,
-      required,
+      required: true,
     },
 
     user: {
