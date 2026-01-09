@@ -1,8 +1,10 @@
 "use client";
-
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {validateEmail, validatePassword} from "@/lib/validation";
 
+import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -15,60 +17,101 @@ import {
 } from "@/components/ui/card";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [notification, setNotification] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isValid, setIsValid] = useState<{
+    email?: boolean;
+    password?: boolean;
+  }>({});
+  const [touched, setTouched] = useState<{
+    email?: boolean;
+    password?: boolean;
+  }>({});
+
+  const isEnabled = isValid.email && isValid.password && !isLoading;
+
+  const router = useRouter();
 
   const userLogin = async () => {
-    setError("")
-    setNotification("")
-    if(!email.trim() || !password.trim()){
+    setError("");
+    setNotification("");
+
+    if (!form.email.trim()) {
+      setError("Enter your email");
+      setIsLoading(false);
+      return;
+    }
+    if (!form.password.trim()) {
+      setError("Enter your password");
+      setIsLoading(false);
       return;
     }
 
     try {
-      console.log("Submitting login request")
+      console.log("Submitting login request");
       const response = await fetch("http://localhost:8000/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: form.email, password: form.password }),
       });
       const data = await response.json();
-      
+
       console.log("Response received:", response.status);
 
       if (!response.ok) {
         // server sends `errors` (array) or a message; normalize it
-        const errMsg = data?.error || (Array.isArray(data?.errors) ? data.errors[0]?.msg : null) || data?.msg || 'Request failed';
+        const errMsg =
+          data?.error ||
+          (Array.isArray(data?.errors) ? data.errors[0]?.msg : null) ||
+          data?.msg ||
+          "Request failed";
         setError(errMsg);
-        setPassword("");
         return;
-      };
+      }
 
-      setPassword("");
-      setEmail("")
-      setNotification(data?.msg)
+      setForm({ ...form, email: "" });
+      router.push("/");
+      // setIsValid({...isValid, password: false});
+      setNotification(data?.msg);
     } catch (error) {
       console.error(error);
-      setPassword("");
+      // setPassword("");
       setError("System Failure, try again later. ");
+      setIsValid({...isValid, password: false});
+    } finally {
+      setForm({ ...form, password: "" });
+      setIsLoading(false);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) =>{
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    userLogin();
+    if (!isValid.email || !isValid.password) {
+      setTouched({ email: true, password: true });
+      return;
+    }
 
-  }
+    setIsLoading(true);
+    userLogin();
+  };
 
   return (
     <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 px-4">
-      {notification && <div className="text-green-500 mb-8">{notification}</div>}
-      {error && <div className="text-red-500 mb-8">{error}</div>}
+      {notification && (
+        <ul className="text-green-500 mb-8 list-disc">
+          <li>{notification}</li>
+        </ul>
+      )}
+      {error && (
+        <ul className="text-red-500 mt-8 mb-8 list-disc">
+          <li>{error}</li>
+        </ul>
+      )}
       <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/80 backdrop-blur hover:border-zinc-600 transition ease-linear duration-300">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-white text-center underline-offset-4 underline">
@@ -79,25 +122,37 @@ export default function Login() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="space-y-5" onSubmit={handleSubmit} noValidate>
             {/* email */}
-            <div className="space-y-2">
+            <div>
               <Label htmlFor="email" className="text-zinc-300">
                 Email
               </Label>
               <Input
                 id="email"
                 name="email"
-                type="text"
+                type="email"
                 placeholder="email"
-                value={email}
+                value={form.email}
                 onChange={(e) => {
-                  setEmail(e.target.value); 
-                  setError("")
+                  setForm({ ...form, email: e.target.value });
+                  setIsValid({
+                    ...isValid,
+                    email: validateEmail(e.target.value),
+                  });
+                  setError("");
                 }}
-                className="bg-zinc-950 border-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-zinc-600"
+                onBlur={() => {
+                  setTouched({ ...touched, email: true });
+                }}
+                className="bg-zinc-950 mt-2 border-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-zinc-600"
                 required
               />
+              {touched.email && !isValid.email && (
+                <p className="text-sm mt-1 ml-2 text-red-500">
+                  Enter valid email
+                </p>
+              )}
             </div>
 
             {/* Password */}
@@ -110,20 +165,39 @@ export default function Login() {
                 name="password"
                 type="password"
                 placeholder="password"
-                value={password}
+                value={form.password}
                 onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError("")
+                  setForm({ ...form, password: e.target.value });
+                  setIsValid({
+                    ...isValid,
+                    password: validatePassword(e.target.value),
+                  });
+                  setError("");
+                }}
+                onBlur={() => {
+                  setTouched({ ...touched, password: true });
                 }}
                 className="bg-zinc-950 border-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-zinc-600"
                 required
               />
+              {touched.password && !isValid.password && (
+                <p className="text-sm text-red-500">Invalid Password!</p>
+              )}
             </div>
+
             <Button
               type="submit"
-              className="w-full bg-white mt-2 text-black cursor-pointer hover:bg-zinc-500 transition ease-linear duration-500"
+              disabled={!isEnabled}
+              className="w-full bg-white mt-2 text-black cursor-pointer hover:bg-zinc-400/70 transition ease-linear duration-300"
             >
-              Log In
+              {isLoading ? (
+                <>
+                  <Spinner />
+                  <span>Validating Credentials...</span>
+                </>
+              ) : (
+                "Log In"
+              )}
             </Button>
           </form>
           {/* Register link */}
