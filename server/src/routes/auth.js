@@ -148,4 +148,10 @@ router.post(
   }
 );
 
+router.get('/logout',(req, res)=>{
+  req.session.destroy(()=>{
+    res.status(204);
+  })
+})
+
 module.exports = router;

@@ -4,11 +4,18 @@ const noteSchema = mongoose.Schema(
   {
     title: {
       type: String,
+      minlength: 15,
       maxlength: 50,
       trim: true,
+      required,
     },
 
-    content: String,
+    content: {
+      type: String,
+      maxlength: 1024,
+      minlength: 250,
+      required,
+    },
 
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -17,7 +24,7 @@ const noteSchema = mongoose.Schema(
     },
   },
 
-  { timestamp: true }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('Note', noteSchema);
