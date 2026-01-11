@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5000
 const connectDB = require('./src/config/db');
 
 const authRoutes = require('./src/routes/auth');
-// const authNotes = require('./src/routes/notes');
+const noteRoutes = require('./src/routes/notes');
 
 // Databse Connection
 
@@ -54,11 +54,11 @@ app.use((req, res, next)=>{
 });
 
 app.use('/auth', authRoutes);
-// app.use('/auth', noteRoutes);
+app.use('/notes', noteRoutes);
 
-app.get("/health", (req, res) => {
-  res.send("OK");
-});
+// app.get("/health", (req, res) => {
+//   res.send("OK");
+// });
 
 
 app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}/`))

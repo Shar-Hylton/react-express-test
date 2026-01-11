@@ -24,7 +24,15 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 
 export default function Register() {
-  const [form, setForm] = useState({
+
+  type UserData = {
+    username: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+  }
+
+  const [form, setForm] = useState<UserData>({
     username: "",
     email: "",
     password: "",
@@ -55,7 +63,7 @@ export default function Register() {
 
   const router = useRouter();
 
-  const userRegister = async () => {
+  const userRegister = async (data: UserData) => {
     setError("");
     setNotification("");
 
@@ -89,26 +97,17 @@ export default function Register() {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({
-          username: form.username,
-          email: form.email,
-          password: form.password,
-          confirmPassword: form.confirmPassword,
-        }),
+        body: JSON.stringify(data),
       });
-      const data = await response.json();
+      const resData = await response.json();
 
       if (!response.ok) {
-        const errMsg =
-          data?.error ||
-          (Array.isArray(data?.errors) ? data.errors[0]?.msg : null) ||
-          data?.msg ||
+        const errMsg = resData?.errors[0]?.msg ??
           "Request failed";
         setError(errMsg);
-        // setIsBtnEnabled(false);
+
         return;
       }
-      // setIsBtnEnabled(false);
       setForm({ ...form, email: "", username: "" });
       setNotification("Register Successful");
       router.push("/")
@@ -130,7 +129,7 @@ export default function Register() {
       return;
     }
     setIsLoading(true);
-    userRegister?.();
+    userRegister?.({...form});
   };
 
   return (

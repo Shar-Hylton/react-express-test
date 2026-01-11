@@ -150,7 +150,7 @@ router.post(
 
 router.get('/logout',(req, res)=>{
   req.session.destroy(()=>{
-    res.status(204);
+    res.status(204).json({msg: "Logout Successfully"});
   })
 })
 
