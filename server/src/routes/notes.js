@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 
     return res.status(200).json({ notes });
   } catch (error) {
-    return res.status(500).json({ errors: "Failed to fetch notes" });
+    return res.status(500).json({ errors: [{msg: "Failed to fetch notes" }]});
   }
 });
 
@@ -37,8 +37,10 @@ router.post(
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(404).json({ errors: errors.array(), old: req.body });
+      return res.status(400).json({ errors: errors.array(), old: req.body });
     }
+
+    const {title, content} = req.body;
 
     try {
       const newNote = await Note.create({
@@ -46,7 +48,7 @@ router.post(
         content,
         user: req.session._id,
       });
-      return res.status(201).json(newNote);
+      return res.status(201).json({message: "note created successfully", newNote});
     } catch (error) {
       console.log(error);
       return res
@@ -56,14 +58,14 @@ router.post(
   }
 );
 
-router.post(
+router.put(
   "/edit/:id",
   ensureLogin,
   owner,
   body("title")
     .notEmpty()
     .withMessage("Enter title")
-    .isLength({ min: 15, min: 50 })
+    .isLength({ min: 15, max: 50 })
     .withMessage("Must be within 15-50 words limit"),
   body("content")
     .notEmpty()
@@ -80,27 +82,29 @@ router.post(
 
     if (!note) return res.status(404).json({ errors: [{ msg: "Note not found" }] });
 
+    const {title, content} = req.body;
+
     try{
-        const updatedNote = await Note.findByIdAndUpdate(req.params.id, {
-            title: req.body.title,
-            content: req.body.content,
-        });
-        return res.status(200).json(updatedNote);
+        const updatedNote = await Note.findByIdAndUpdate(req.params.id, 
+            {title, content},
+            {new: true}
+        );
+        return res.status(200).json(updatedNote,{message: "Note updated Successfully"});
     }catch(error){
         return res.status(500).json({errors: [{msg: "Failed to update note"}]})
     }
   }
 );
 
-router.post('/delete/:id',ensureLogin, owner, async (req,res)=>{
+router.delete('/delete/:id',ensureLogin, owner, async (req,res)=>{
     const note = await Note.findById(req.params.id)
 
     if(!note) return res.status(404).json({errors: [{msg: "Note not found"}]});
 
     try{
-        await Note.findByIdAndDelete(note);
+        await Note.findByIdAndDelete(req.params.id);
         console.log("note deleted: ", JSON.stringify(note))
-        return res.status(200);
+        return res.status(200).json({message: "Note deleted successfully!"});
 
     }catch(error){
         console.log(error);

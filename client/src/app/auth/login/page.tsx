@@ -16,8 +16,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+type UserData = {
+  email:string,
+  password:string
+}
+
+
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState<UserData>({ email: "", password: "" });
   const [error, setError] = useState("");
   const [notification, setNotification] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +40,7 @@ export default function Login() {
 
   const router = useRouter();
 
-  const userLogin = async () => {
+  const userLogin = async (data:UserData) => {
     setError("");
     setNotification("");
 
@@ -57,19 +63,16 @@ export default function Login() {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ email: form.email, password: form.password }),
+        body: JSON.stringify(data),
       });
-      const data = await response.json();
+      const resData = await response.json();
 
       console.log("Response received:", response.status);
 
       if (!response.ok) {
         // server sends `errors` (array) or a message; normalize it
         const errMsg =
-          data?.error ||
-          (Array.isArray(data?.errors) ? data.errors[0]?.msg : null) ||
-          data?.msg ||
-          "Request failed";
+          resData?.errors[0]?.msg ?? "Request failed";
         setError(errMsg);
         return;
       }
@@ -77,7 +80,7 @@ export default function Login() {
       setForm({ ...form, email: "" });
       router.push("/");
       // setIsValid({...isValid, password: false});
-      setNotification(data?.msg);
+      setNotification(resData?.msg);
     } catch (error) {
       console.error(error);
       // setPassword("");
@@ -97,7 +100,7 @@ export default function Login() {
     }
 
     setIsLoading(true);
-    userLogin();
+    userLogin({...form});
   };
 
   return (
