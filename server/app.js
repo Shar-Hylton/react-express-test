@@ -48,11 +48,6 @@ app.use(
     })
 );
 
-app.use((req, res, next)=>{
-    res.locals.session = req.session;
-    next();
-});
-
 app.use('/auth', authRoutes);
 app.use('/notes', noteRoutes);
 

@@ -28,6 +28,7 @@ type NotesContextType = {
   createNote: (data: { title: string; content: string })=> Promise<void>;
   deleteNote: (id: string) => Promise<void>;
 };
+const NOTES_CACHE_KEY = "notes_cache";
 
 const NotesContext = createContext<NotesContextType | undefined>(undefined);
 
@@ -37,14 +38,26 @@ export const useNotes = () => {
   return context;
 };
 
+
 export function NotesProvider({ children }: { children: ReactNode }) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-
  
+  const saveNotesToCache = (notes: Note[]) =>{
+    sessionStorage.setItem(NOTES_CACHE_KEY,JSON.stringify(notes))
+  };
+
+  const getNotesFromCache = (): Note[] | null => {
+    const cached = sessionStorage.getItem(NOTES_CACHE_KEY);
+    return cached ? JSON.parse(cached) : null;
+  }
+
   // POST
   const createNote = async(data:{title:string, content:string}) =>{
+
+    setErrorMsg("");
+    setSuccessMsg("");
     try {
       const response = await fetch("http://localhost:8000/notes/add", {
         method: "POST",
@@ -62,7 +75,13 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         setErrorMsg(msg);
         return;
       }
-      setNotes(prev => [resData.newNote,...prev]);
+
+      setNotes((prev) => {
+        const updated = [resData.newNote, ...prev];
+        saveNotesToCache(updated);
+        return updated;
+      });
+
       setSuccessMsg(resData.message);
     } catch (error) {
       setErrorMsg("Server Error. Failed to create note");
@@ -77,6 +96,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   ) => {
 
     setErrorMsg("");
+    setSuccessMsg("");
     try {
       const response = await fetch(`http://localhost:8000/edit/${id}`, {
         method: "PUT",
@@ -91,7 +111,13 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         setErrorMsg(errMsg);
       }
       // Updating state without refetching
-      setNotes((prev)=>prev.map((note)=>(note._id===id ? resData.updatedNote : note)));
+      setNotes((prev)=>{
+        const updated = prev.map((note)=>(
+          note._id === id ? resData.updatedNote : note
+        ));
+      saveNotesToCache(updated);
+      return updated;
+    });
       setSuccessMsg(resData.message);
     } catch (error) {
       console.log(error);
@@ -104,9 +130,18 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const getNotes = async () => {
 
+      const url: string = "http://localhost:8000/notes";
+
       setErrorMsg("");
       try {
-        const response = await fetch("http://localhost:8000/notes", {
+        const cachedNotes = getNotesFromCache();
+
+        if (cachedNotes) {
+          setNotes(cachedNotes);
+          return;
+        }
+
+        const response = await fetch(url, {
           credentials: "include", // without this req.session.user._id is undefined
         });
         const data = await response.json();
@@ -118,8 +153,9 @@ export function NotesProvider({ children }: { children: ReactNode }) {
           setErrorMsg(errMsg);
           return;
         }
-
+        
         setNotes(data?.notes ?? []);
+        saveNotesToCache(data.notes ?? []);
       } catch (error) {
         console.log(error);
         setErrorMsg("Failed to fetch notes");
@@ -131,6 +167,9 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   // Delete
 
   const deleteNote = async (id:string) => {
+    setErrorMsg("");
+    setSuccessMsg("");
+                      
     try{
       const response = await fetch(`http://localhost:8000/notes/delete/${id}`, {
         method: "DELETE",
@@ -143,6 +182,15 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         setErrorMsg(errorMsg);
         return;
       }
+
+      setNotes((prev)=>{
+        const updated = prev.filter((note)=>note._id !== id);
+        saveNotesToCache(updated);
+        return updated;
+
+      });
+      setSuccessMsg(data.message ?? "Note deleted");
+
     }catch(error){
       setErrorMsg("Server error. Failed to delete note.");
       console.log(error);
