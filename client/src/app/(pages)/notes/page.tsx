@@ -1,3 +1,5 @@
+'use client'
+
 import NoteCard from "@/components/NoteCard";
 import { useNotes } from "@/notesContext/NotesContext";
 import { useRouter } from "next/navigation";
@@ -15,7 +17,7 @@ export default function Notes() {
   };
 
   const handleEdit = (id: string) => {
-    router.push("notes/add");
+    router.push(`notes/${id}/edit`);
   };
   const handleAdd = () => {
     router.push("/notes/add");

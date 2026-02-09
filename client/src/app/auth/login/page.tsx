@@ -78,7 +78,7 @@ export default function Login() {
       }
 
       setForm({ ...form, email: "" });
-      router.push("/");
+      router.push("/notes");
       // setIsValid({...isValid, password: false});
       setNotification(resData?.msg);
     } catch (error) {
