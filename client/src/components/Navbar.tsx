@@ -10,7 +10,7 @@ import {
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import Link from "next/link";
+import Link from "next/link"
 
 
 export default function Navbar() {
@@ -45,7 +45,7 @@ export default function Navbar() {
 
         <PopoverGroup className="hidden lg:flex lg:gap-x-12">
           
-          <Link href="#" className="text-sm/6 font-semibold text-gray-800">
+          <Link href="/notes" className="text-sm/6 font-semibold text-gray-800">
             Notes
           </Link>
 
@@ -60,7 +60,7 @@ export default function Navbar() {
         </PopoverGroup>
 
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <Link href="#" className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md">
+          <Link href="/auth/login" className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md">
             Log in <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
@@ -95,7 +95,7 @@ export default function Navbar() {
               <div className="space-y-2 py-6">
                 
                 <Link
-                  href="#"
+                  href="notes"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
                 >
                   Notes
@@ -115,7 +115,7 @@ export default function Navbar() {
               </div>
               <div className="py-6">
                 <Link
-                  href="#"
+                  href="/auth/login"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
                 >
                   Log in

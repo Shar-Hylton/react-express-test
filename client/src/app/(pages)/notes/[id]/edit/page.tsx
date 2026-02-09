@@ -15,11 +15,11 @@ type EditNoteForm = {
 };
 
 export default function EditNote() {
-  const params = useParams();
+  const {id} = useParams();
   const router = useRouter();
   const { notes, updateNote, errorMsg } = useNotes();
 
-  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  
   const note = notes.find((n) => n._id === id);
 
   const {
@@ -31,9 +31,7 @@ export default function EditNote() {
 
   // Populate form once note is available
   useEffect(() => {
-    if(!note){
-      
-    }
+    
     if (note) {
       reset({
         title: note.title,
