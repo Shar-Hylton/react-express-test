@@ -1,4 +1,4 @@
-import react from 'react'
+import react from "react";
 import Navbar from "@/components/Navbar";
 
 export default function PagesLayout({
@@ -7,12 +7,13 @@ export default function PagesLayout({
   children: React.ReactNode;
 }>) {
   return (
-   
-      < >
-        <Navbar />
-
+    <>
+    
+      <Navbar />
+      
+      <main className="flex pt-30 ">
         {children}
-      </>
-   
+      </main>
+    </>
   );
 }

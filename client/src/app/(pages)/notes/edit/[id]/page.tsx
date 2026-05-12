@@ -4,10 +4,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "../../../../../compone
 import { Input } from "../../../../../components/ui/input";
 import { Textarea } from "../../../../../components/ui/textarea";
 import { Button } from "../../../../../components/ui/button";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useNotes } from "../../../../../notesContext/NotesContext";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 type EditNoteForm = {
   title: string;
@@ -17,11 +18,8 @@ type EditNoteForm = {
 export default function EditNote() {
   const {id} = useParams();
   const router = useRouter();
-  const { notes, updateNote, errorMsg } = useNotes();
-
+  const { notes, isLoading, updateNote, errorMsg } = useNotes();
   
-  const note = notes.find((n) => n._id === id);
-
   const {
     register,
     handleSubmit,
@@ -29,24 +27,38 @@ export default function EditNote() {
     formState: { errors, isSubmitting },
   } = useForm<EditNoteForm>();
 
+  const note = notes?.find((n) => n?._id === String(id));
+
   // Populate form once note is available
   useEffect(() => {
     
-    if (note) {
-      reset({
-        title: note.title,
-        content: note.content,
-      });
-    }else{
-      router.replace("/notes");
+    if(!isLoading && !note){
+      const timer = setTimeout(()=> router.replace("/notes"), 2000);
+      return () => clearTimeout(timer);
     }
-  }, [note, reset, router]);
+      reset({
+        title: note?.title,
+        content: note?.content,
+      });
+  
+  }, [note, isLoading, reset, router]);
 
-  if (!note) return <p className="text-center mt-10">Note not found</p>;
+
+   if(isLoading){
+    return (
+      <div className=" w-full flex items-center justify-center mt-30">
+        <Spinner className="size-16 text-blue" />
+      </div>
+    );
+  }
+
+
+  if (!note) return <h1 className="text-center text-4xl mx-auto mt-10">Note not found</h1>;
 
   const onSubmit = async (data: EditNoteForm) => {
-    await updateNote(id as string, data);
-    router.push("/notes");
+    const success: boolean = await updateNote(id as string, data);
+    if(!success) return;
+    router.replace("/notes");
   };
 
   return (
@@ -95,7 +107,7 @@ export default function EditNote() {
             </div>
 
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Update..." : "Update Note"}
+              {isSubmitting ? "Updating..." : "Update Note"}
             </Button>
           </form>
         </CardContent>

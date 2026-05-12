@@ -1,6 +1,22 @@
+# Issues
+
+- On the edit page, when ever I reload the page, it glitches and show me note not found, then shows the note that it said didn't exist and then routed me to the notes page.
+ 
+``FIX``
+- So it turns out that when fetching data from the database in an async function, I should store the returned value in a variable to prevent the next line of code to run before the promise is resolved/rejected.
+-- Code on edit page; line: 58-62 - no variable was used on line 59.  
+
 # Learning Outcome
+- React batches states meaning all the changed states are stored before each re-rendering. React does this to prevent each state change from updating the webpage. This means that the value of each state is stale data until the page re-renders. Be mindful not to use conditionals on state values before it renders.
+-- Code on edit page; line: 58-62 - error using [if(errorMsg)].
 
+- All states must be declared at the top level. 
+- Never use hooks in conditionals where 1 render may show more hooks than the other. React needs to track the number of hooks used inside a component.
+For Example, one render sees useForm, useEffeck, UseState. If your code has a conditional that causes any form of inconsistency in rendering each hooks that this breaks Reacts architecture and functionality.
 
+``FIX``
+Move conditionals after declaring and using React hooks.
+-- Code on edit page; line: 30-62 - error using declaring if statements before useEffect and useForm hooks.
 
 # removing file from git staging 
 
@@ -10,7 +26,7 @@
 
 - git restore --staged <file>
 
-# more giit commands
+# more git commands
 
 - git pull --rebase origin main
 This command:
@@ -19,7 +35,9 @@ This command:
 
 - Error message:
 
-```hint: Updates were rejected because the tip of your current branch is behind
-hint: its remote counterpart. If you want to integrate the remote changes,
-hint: use 'git pull' before pushing again.
-hint: See the 'Note about fast-forwards' in 'git push --help' for details.```
+``hint: Updates were rejected because the tip``
+``of your current branch is behind``
+``hint: its remote counterpart. If you want to`` ``integrate the remote changes,``
+``hint: use 'git pull' before pushing again.``
+``hint: See the 'Note about fast-forwards' in 'git push --help' for details.``
+

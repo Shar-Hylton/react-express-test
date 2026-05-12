@@ -13,18 +13,18 @@ export default function NotesList() {
     await deleteNote(id);
   };
   const handleEdit = (id: string) => {
-    router.push(`notes/edit/:${id}`);
+    router.push(`notes/edit/${id}`);
   };
 
   return (
-    <div className="grid gap-4">
+    <div className="flex gap-4">
       {notes.map((note) => (
         <NoteCard
-          key={note._id}
-          id={note._id}
-          title={note.title}
-          content={note.content}
-          user={note.user}
+          key={note?._id}
+          id={note?._id}
+          title={note?.title}
+          content={note?.content}
+          user={note?.user}
           onDelete={handleDelete}
           onEdit={handleEdit}
         />
