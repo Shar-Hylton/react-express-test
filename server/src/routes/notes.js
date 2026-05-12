@@ -46,7 +46,7 @@ router.post(
       const newNote = await Note.create({
         title,
         content,
-        user: req.session._id,
+        user: req.session.user._id,
       });
       return res.status(201).json({message: "note created successfully", newNote});
     } catch (error) {
@@ -89,7 +89,7 @@ router.put(
             {title, content},
             {new: true}
         );
-        return res.status(200).json(updatedNote,{message: "Note updated Successfully"});
+        return res.status(200).json({updatedNote, message: "Note updated Successfully"});
     }catch(error){
         return res.status(500).json({errors: [{msg: "Failed to update note"}]})
     }
@@ -107,7 +107,7 @@ router.delete('/delete/:id',ensureLogin, owner, async (req,res)=>{
         return res.status(200).json({message: "Note deleted successfully!"});
 
     }catch(error){
-        console.log(error);
+        console.log("Nothing is deleted", error);
         return res.status(500).json({errors: [{msg: "Failed to delete note"}]})
     }
 })

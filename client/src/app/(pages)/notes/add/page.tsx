@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,36 +14,42 @@ type NoteFormData = {
 };
 
 export default function AddNote() {
-  const { errorMsg, successMsg, createNote } = useNotes();
+  const { errorMsg, createNote } = useNotes();
 
   const {
     register,
-    reset,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<NoteFormData>();
 
   const router = useRouter();
+  const titleValue = useWatch({control, name: "title"})?.length || 0;
+  const contentValue = useWatch({control, name: "content"})?.length || 0;
 
   const onSubmit = async (data: NoteFormData) => {
     await createNote(data);
-    reset();
-    router.push("/notes");
+    router.replace("/notes");
   };
 
-  return (
+  
+    return (
     <>
-      <Card className="max-w-xl mx-auto mt-10">
+      <Card className="max-w-xl w-md mx-auto mt-20 ">
         <CardHeader>
-          <CardTitle>Create Note</CardTitle>
+          <CardTitle>
+            <h3 className="text-center text-xl">Create Your Note</h3>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
+            <div className="relative">
               <Input
-                placeholder="Enter note Title"
+              className="pr-14"
+                maxLength={50}
+                placeholder="Enter Your Title Here"
                 {...register("title", {
-                  required: "title is required",
+                  required: "Title is required",
                   minLength: {
                     value: 15,
                     message: "Title must be at least 15 characters",
@@ -54,12 +60,22 @@ export default function AddNote() {
                   },
                 })}
               />
+
+              {titleValue > 0 && (
+                <span className= {`absolute bottom-1 right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground ${titleValue < 15 ? "text-red-600" : ""}`}>
+                  {titleValue}/50
+                </span>
+              )}
               {errors.title && (
-                <p className="text-sm text-red-500">{errors.title.message}</p>
+                <p className="text-sm font-medium m-1 text-red-500">
+                  {errors.title.message}
+                </p>
               )}
             </div>
             <div>
               <Textarea
+              className=""
+                maxLength={1024}
                 placeholder="Enter Your Content Here"
                 rows={6}
                 {...register("content", {
@@ -74,19 +90,33 @@ export default function AddNote() {
                   },
                 })}
               />
+               {contentValue > 0 && (
+                <span
+                  className={`flex justify-end text-xs text-muted-foreground mt-1 ${
+                    contentValue < 250
+                      ? "text-red-600"
+                      : ""
+                  }`}
+                >
+                  {contentValue}/1024
+                </span>
+              )}
               {errors.content && (
-                <p className="text-sm text-red-500">{errors.content.message}</p>
+                <p className="text-sm font-medium m-1 text-red-500">
+                  {errors.content.message}
+                </p>
               )}
             </div>
 
             {errorMsg && <p className="text-sm text-red-500"> {errorMsg}</p>}
-            {successMsg && (
+            {/* {successMsg && (
               <p className="text-sm text-green-500"> {successMsg}</p>
-            )}
-
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create Note"}
-            </Button>
+            )} */}
+            <div className="flex justify-center items-center my-4">
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Creating..." : "Create Note"}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
