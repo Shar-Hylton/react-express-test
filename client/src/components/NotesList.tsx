@@ -1,9 +1,10 @@
 import NoteCard from "./NoteCard";
 import { useNotes } from "../notesContext/NotesContext";
 import { useRouter } from "next/navigation";
+import { Spinner } from "./ui/spinner";
 
 export default function NotesList() {
-  const { notes, deleteNote } = useNotes();
+  const { isLoading, notes, deleteNote } = useNotes();
 
   const router = useRouter();
 
@@ -16,6 +17,21 @@ export default function NotesList() {
     router.push(`notes/edit/${id}`);
   };
 
+  if(isLoading){
+    return (
+      <div className=" w-full flex items-center justify-center mt-30">
+        <Spinner className="size-16 text-blue" />
+      </div>
+    );
+  }
+// If a there is no note created, users should see Create the first Note.
+  // if(!isLoading && !notes){
+  //   return (
+  //     <div className=" w-full flex items-center justify-center mt-30">
+  //       <h3 className="text-blue-500">Be The First To Create a Note</h3>
+  //     </div>
+  //   );
+  // }
   return (
     <div className="flex gap-4">
       {notes.map((note) => (
