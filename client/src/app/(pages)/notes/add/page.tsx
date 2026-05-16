@@ -74,7 +74,6 @@ export default function AddNote() {
             </div>
             <div>
               <Textarea
-              className=""
                 maxLength={1024}
                 placeholder="Enter Your Content Here"
                 rows={6}
@@ -112,11 +111,11 @@ export default function AddNote() {
             {/* {successMsg && (
               <p className="text-sm text-green-500"> {successMsg}</p>
             )} */}
-            <div className="flex justify-center items-center my-4">
+            
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Creating..." : "Create Note"}
               </Button>
-            </div>
+          
           </form>
         </CardContent>
       </Card>
