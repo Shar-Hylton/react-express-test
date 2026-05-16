@@ -7,7 +7,7 @@ import { Button } from "../../../../../components/ui/button";
 import { useForm, useWatch } from "react-hook-form";
 import { useNotes } from "../../../../../notesContext/NotesContext";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import { Spinner } from "@/components/ui/spinner";
 
 type EditNoteForm = {
@@ -23,11 +23,15 @@ export default function EditNote() {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<EditNoteForm>();
 
   const note = notes?.find((n) => n?._id === String(id));
+
+  const titleValue = useWatch({control, name:"title"})?.length || 0;
+  const contentValue = useWatch({control, name:"content"})?.length || 0;
 
   // Populate form once note is available
   useEffect(() => {
@@ -70,7 +74,7 @@ export default function EditNote() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {errorMsg && <p className="text-red-500">{errorMsg}</p>}
-            <div>
+            <div className="relative">
               <Input
                 placeholder="Enter Title"
                 {...register("title", {
@@ -85,6 +89,13 @@ export default function EditNote() {
                   },
                 })}
               />
+
+                {titleValue > 0 && (
+                <span className= {`absolute bottom-1 right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground ${titleValue < 15 ? "text-red-600" : ""}`}>
+                  {titleValue}/50
+                </span>
+              )}
+
             </div>
             <div>
               <Textarea
@@ -101,6 +112,19 @@ export default function EditNote() {
                   },
                 })}
               />
+
+              {contentValue > 0 && (
+                <span
+                  className={`flex justify-end text-xs text-muted-foreground mt-1 ${
+                    contentValue < 250
+                      ? "text-red-600"
+                      : ""
+                  }`}
+                >
+                  {contentValue}/1024
+                </span>
+              )}
+
               {errors.content && (
                 <p className="text-red-500 text-sm">{errors.content.message}</p>
               )}
