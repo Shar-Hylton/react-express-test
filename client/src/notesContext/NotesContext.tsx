@@ -11,21 +11,17 @@ type Note = {
   _id: string;
   title: string;
   content: string;
-  user?: { username: string; email: string };
+  user: { username: string; email: string };
 };
 
 type NotesContextType = {
   notes: Note[];
   isLoading: boolean;
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
-  errorMsg: string;
-  // setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
-  successMsg: string;
-  // setSuccessMsg: React.Dispatch<React.SetStateAction<string>>;
   updateNote: (
     id: string,
     data: { title: string; content: string },
-  ) => Promise<boolean>;
+  ) => Promise<{success:boolean, message:string}>;
   createNote: (data: { title: string; content: string }) => Promise<void>;
   deleteNote: (id: string) => Promise<void>;
 };
@@ -41,8 +37,6 @@ export const useNotes = () => {
 
 export function NotesProvider({ children }: { children: ReactNode }) {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   const saveNotesToCache = (notes: Note[]) => {
@@ -56,8 +50,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
 
   // POST
   const createNote = async (data: { title: string; content: string }) => {
-    setErrorMsg("");
-    setSuccessMsg("");
+   
     try {
       const response = await fetch("http://localhost:8000/notes/add", {
         method: "POST",
@@ -72,7 +65,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
 
       if (!response.ok) {
         const msg = resData?.errors[0]?.msg ?? "Failed to create note";
-        setErrorMsg(msg);
+        console.log(msg);
         return;
       }
 
@@ -82,9 +75,8 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         return updated;
       });
 
-      setSuccessMsg(resData.message);
     } catch (error) {
-      setErrorMsg("Server Error. Failed to create note");
+     
       console.log(error);
     }
   };
@@ -94,8 +86,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     id: string,
     data: { title: string; content: string },
   ) => {
-    setErrorMsg("");
-    setSuccessMsg("");
+   
     try {
       const response = await fetch(`http://localhost:8000/notes/edit/${id}`, {
         method: "PUT",
@@ -104,11 +95,14 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(data),
       });
       const resData = await response.json();
-
+      
       if (!response.ok) {
-        const errMsg = resData?.errors[0]?.msg ?? "Failed to update note";
-        setErrorMsg(errMsg);
-        return false;
+        const msg = resData?.errors[0]?.msg ?? "Failed to update note";
+        console.log(msg);
+        return {
+          success:false,
+          message: msg
+        };
       }
       // Updating state without refetching
       setNotes((prev) => {
@@ -118,12 +112,17 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         saveNotesToCache(updated);
         return updated;
       });
-      setSuccessMsg(resData.message);
-      return true;
+      
+      return {
+          success:true,
+          message: "Note updated successfully"
+        };
     } catch (error) {
       console.log(error);
-      setErrorMsg("Server error! Failed to update note");
-      return false;
+      return {
+          success:false,
+          message: "Failed to update note"
+        };
     }
     
   };
@@ -133,7 +132,6 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     const getNotes = async () => {
       const url: string = "http://localhost:8000/notes";
 
-      setErrorMsg("");
       try {
         const cachedNotes = getNotesFromCache();
 
@@ -150,8 +148,8 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         console.log("Response received: ", response.status);
 
         if (!response.ok) {
-          const errMsg = data?.errors[0]?.msg ?? "No notes yet";
-          setErrorMsg(errMsg);
+          const msg = data?.errors[0]?.msg ?? "No notes yet";
+          console.log(msg);
           return;
         }
 
@@ -159,7 +157,6 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         saveNotesToCache(data.notes ?? []);
       } catch (error) {
         console.log(error);
-        setErrorMsg("Failed to fetch notes");
       } finally {
         setIsLoading(false);
       }
@@ -170,8 +167,6 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   // Delete
 
   const deleteNote = async (id: string) => {
-    setErrorMsg("");
-    setSuccessMsg("");
 
     try {
       const response = await fetch(`http://localhost:8000/notes/delete/${id}`, {
@@ -181,8 +176,8 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
 
       if (!response.ok) {
-        const errorMsg = data?.errors?.[0]?.msg ?? "Failed to delete note";
-        setErrorMsg(errorMsg);
+        const msg = data?.errors?.[0]?.msg ?? "Failed to delete note";
+        console.log(msg);
         return;
       }
 
@@ -191,9 +186,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         saveNotesToCache(updated);
         return updated;
       });
-      setSuccessMsg(data.message ?? "Note deleted");
     } catch (error) {
-      setErrorMsg("Server error. Failed to delete note.");
       console.log(error);
     }
   };
@@ -204,8 +197,6 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         notes,
         isLoading,
         setNotes,
-        errorMsg,
-        successMsg,
         updateNote,
         createNote,
         deleteNote,

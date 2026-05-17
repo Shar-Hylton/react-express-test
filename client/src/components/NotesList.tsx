@@ -24,6 +24,7 @@ export default function NotesList() {
       </div>
     );
   }
+  // console.log(notes);
 // If a there is no note created, users should see Create the first Note.
   // if(!isLoading && !notes){
   //   return (

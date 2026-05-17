@@ -47,8 +47,10 @@ router.post(
         title,
         content,
         user: req.session.user._id,
-      });
+      }).populate("user", "username email");
+
       return res.status(201).json({message: "note created successfully", newNote});
+      
     } catch (error) {
       console.log(error);
       return res
@@ -88,7 +90,7 @@ router.put(
         const updatedNote = await Note.findByIdAndUpdate(req.params.id, 
             {title, content},
             {new: true}
-        );
+        ).populate("user", "username email");
         console.log("note updated: ", JSON.stringify(updatedNote))
         return res.status(200).json({updatedNote, message: "Note updated Successfully"});
     }catch(error){
