@@ -14,7 +14,7 @@ type NoteFormData = {
 };
 
 export default function AddNote() {
-  const { errorMsg, createNote } = useNotes();
+  const {createNote } = useNotes();
 
   const {
     register,
@@ -107,7 +107,7 @@ export default function AddNote() {
               )}
             </div>
 
-            {errorMsg && <p className="text-sm text-red-500"> {errorMsg}</p>}
+            {/* {errorMsg && <p className="text-sm text-red-500"> {errorMsg}</p>} */}
             {/* {successMsg && (
               <p className="text-sm text-green-500"> {successMsg}</p>
             )} */}

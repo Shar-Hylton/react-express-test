@@ -1,13 +1,18 @@
 "use client";
 
-import { Card, CardHeader, CardTitle, CardContent } from "../../../../../components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../../../../../components/ui/card";
 import { Input } from "../../../../../components/ui/input";
 import { Textarea } from "../../../../../components/ui/textarea";
 import { Button } from "../../../../../components/ui/button";
 import { useForm, useWatch } from "react-hook-form";
 import { useNotes } from "../../../../../notesContext/NotesContext";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect} from "react";
+import { useEffect, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 
 type EditNoteForm = {
@@ -16,10 +21,11 @@ type EditNoteForm = {
 };
 
 export default function EditNote() {
-  const {id} = useParams();
+  const { id } = useParams();
   const router = useRouter();
-  const { notes, isLoading, updateNote, errorMsg } = useNotes();
-  
+  const { notes, isLoading, updateNote } = useNotes();
+  const [errorMsg, setErrorMsg] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -30,25 +36,22 @@ export default function EditNote() {
 
   const note = notes?.find((n) => n?._id === String(id));
 
-  const titleValue = useWatch({control, name:"title"})?.length || 0;
-  const contentValue = useWatch({control, name:"content"})?.length || 0;
+  const titleValue = useWatch({ control, name: "title" })?.length || 0;
+  const contentValue = useWatch({ control, name: "content" })?.length || 0;
 
   // Populate form once note is available
   useEffect(() => {
-    
-    if(!isLoading && !note){
-      const timer = setTimeout(()=> router.replace("/notes"), 2000);
+    if (!isLoading && !note) {
+      const timer = setTimeout(() => router.replace("/notes"), 2000);
       return () => clearTimeout(timer);
     }
-      reset({
-        title: note?.title,
-        content: note?.content,
-      });
-  
+    reset({
+      title: note?.title,
+      content: note?.content,
+    });
   }, [note, isLoading, reset, router]);
 
-
-   if(isLoading){
+  if (isLoading) {
     return (
       <div className=" w-full flex items-center justify-center mt-30">
         <Spinner className="size-16 text-blue" />
@@ -56,12 +59,19 @@ export default function EditNote() {
     );
   }
 
-
-  if (!note) return <h1 className="text-center text-4xl mx-auto mt-10">Note not found</h1>;
+  if (!note)
+    return (
+      <h1 className="text-center text-4xl mx-auto mt-10">Note not found</h1>
+    );
 
   const onSubmit = async (data: EditNoteForm) => {
-    const success: boolean = await updateNote(id as string, data);
-    if(!success) return;
+    const result = await updateNote(id as string, data);
+    const success = result.success;
+    const err = result.message;
+    if (!success) {
+      setErrorMsg(err);
+      return;
+    }
     router.replace("/notes");
   };
 
@@ -90,12 +100,13 @@ export default function EditNote() {
                 })}
               />
 
-                {titleValue > 0 && (
-                <span className= {`absolute bottom-1 right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground ${titleValue < 15 ? "text-red-600" : ""}`}>
+              {titleValue > 0 && (
+                <span
+                  className={`absolute bottom-1 right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground ${titleValue < 15 ? "text-red-600" : ""}`}
+                >
                   {titleValue}/50
                 </span>
               )}
-
             </div>
             <div>
               <Textarea
@@ -116,9 +127,7 @@ export default function EditNote() {
               {contentValue > 0 && (
                 <span
                   className={`flex justify-end text-xs text-muted-foreground mt-1 ${
-                    contentValue < 250
-                      ? "text-red-600"
-                      : ""
+                    contentValue < 250 ? "text-red-600" : ""
                   }`}
                 >
                   {contentValue}/1024

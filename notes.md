@@ -2,9 +2,14 @@
 
 - On the edit page, when ever I reload the page, it glitches and show me note not found, then shows the note that it said didn't exist and then routed me to the notes page.
  
-``FIX``
-- So it turns out that when fetching data from the database in an async function, I should store the returned value in a variable to prevent the next line of code to run before the promise is resolved/rejected.
+`FIX`
+[-] So it turns out that when fetching data from the database in an async function, I should store the returned value in a variable to prevent the next line of code to run before the promise is resolved/rejected.
 -- Code on edit page; line: 58-62 - no variable was used on line 59.  
+
+- When a note fails to be created, the message returned by the server is left on the form and we are redirected to the notes page
+
+`FIX`
+[-] I was using a global state for error handling which feeds all the components the same updates. Context must only send data to be consumed not modify UI. So I moved error and success messages into the components itself. the updateNote context now returns an object with key/values:- success: boolean, message: string. The components will determine what message get sent to the users depending on the value of success. 
 
 # Learning Outcome
 - React batches states meaning all the changed states are stored before each re-rendering. React does this to prevent each state change from updating the webpage. This means that the value of each state is stale data until the page re-renders. Be mindful not to use conditionals on state values before it renders.
