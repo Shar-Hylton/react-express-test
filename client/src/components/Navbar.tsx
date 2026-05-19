@@ -1,19 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Dialog,
-  DialogPanel,
-  PopoverGroup
-} from "@headlessui/react";
-import {
-  Bars3Icon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
-import Link from "next/link"
-
+import { Dialog, DialogPanel, PopoverGroup } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { useAuth } from "@/notesContext/AuthContext";
 
 export default function Navbar() {
+  const { user, isAuthenticated, logout } = useAuth();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -44,7 +39,6 @@ export default function Navbar() {
         </div>
 
         <PopoverGroup className="hidden lg:flex lg:gap-x-12">
-          
           <Link href="/notes" className="text-sm/6 font-semibold text-gray-800">
             Notes
           </Link>
@@ -56,14 +50,34 @@ export default function Navbar() {
           <Link href="#" className="text-sm/6 font-semibold text-gray-800">
             Help
           </Link>
-
         </PopoverGroup>
-
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <Link href="/auth/login" className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md">
-            Log in <span aria-hidden="true">&rarr;</span>
-          </Link>
-        </div>
+        {isAuthenticated ? (
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+            <Link
+              href="/auth/login"
+              className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
+            >
+              Log out <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+            <Link
+              href="/auth/login"
+              className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
+            >
+              Log in <span aria-hidden="true">&rarr;</span>
+            </Link>
+            <div className="hidden flex justify-end mx-1">
+              <Link
+                href="/auth/login"
+                className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
+              >
+                Register <span aria-hidden="true">&rarr;</span>
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
       <Dialog
         open={mobileMenuOpen}
@@ -79,7 +93,7 @@ export default function Navbar() {
                 alt=""
                 src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
                 className="h-8 w-auto"
-               />
+              />
             </Link>
             <button
               type="button"
@@ -93,7 +107,6 @@ export default function Navbar() {
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-200">
               <div className="space-y-2 py-6">
-                
                 <Link
                   href="notes"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"

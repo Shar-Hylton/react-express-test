@@ -34,7 +34,7 @@ export default function NotesList() {
   //   );
   // }
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-wrap justify-center gap-8">
       {notes.map((note) => (
         <NoteCard
           key={note?._id}

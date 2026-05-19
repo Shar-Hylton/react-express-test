@@ -11,7 +11,7 @@ export default function PagesLayout({
     
       <Navbar />
       
-      <main className="flex pt-30 ">
+      <main className="flex pt-30">
         {children}
       </main>
     </>
