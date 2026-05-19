@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {useAuth} from "@/notesContext/AuthContext";
 
 type UserData = {
   email:string,
@@ -35,6 +36,8 @@ export default function Login() {
     email?: boolean;
     password?: boolean;
   }>({});
+
+  const {login} = useAuth();
 
   const isEnabled = isValid.email && isValid.password && !isLoading;
 
@@ -76,7 +79,7 @@ export default function Login() {
         setError(errMsg);
         return;
       }
-
+      login(resData.user)
       setForm({ ...form, email: "" });
       router.push("/notes");
       // setIsValid({...isValid, password: false});

@@ -139,7 +139,7 @@ router.post(
         email:user.email
       };
       req.session.success = 'Welcome Back!';
-      res.status(200).json({msg: 'Log in Successful'})
+      res.status(200).json({user, msg: 'Log in Successful'})
 
     } catch (err) {
       console.error(err);
@@ -148,8 +148,26 @@ router.post(
   }
 );
 
-router.get('/logout',(req, res)=>{
-  req.session.destroy(()=>{
+router.get("/me", (req, res) => {
+  if (!req.session.user){
+    return res.status(401).json({
+      errors: [{msg: "Unauthorized"}],
+    });
+  }
+
+  return res.status(200).json({
+    user: req.session.user,
+  });
+});
+
+router.post('/logout',(req, res)=>{
+  req.session.destroy((err)=> {
+    if(err) {
+      return res.status(500).json({
+        errors: [{msg: "Failed to logout"}],
+      });
+    }
+    res.clearCookie("connect.sid")
     res.status(204).json({msg: "Logout Successfully"});
   })
 })
