@@ -5,6 +5,7 @@ import { Dialog, DialogPanel, PopoverGroup } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useAuth } from "@/notesContext/AuthContext";
+import { Button } from "./ui/button";
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -53,29 +54,29 @@ export default function Navbar() {
         </PopoverGroup>
         {isAuthenticated ? (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <Link
-              href="/auth/login"
+            <Button
+              onClick={logout}
               className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
             >
               Log out <span aria-hidden="true">&rarr;</span>
-            </Link>
+            </Button>
           </div>
         ) : (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <Link
               href="/auth/login"
-              className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
+              className="text-sm/6 font-semibold mx-2 text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
             >
               Log in <span aria-hidden="true">&rarr;</span>
             </Link>
-            <div className="hidden flex justify-end mx-1">
+           
               <Link
-                href="/auth/login"
+                href="/auth/register"
                 className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
               >
                 Register <span aria-hidden="true">&rarr;</span>
               </Link>
-            </div>
+            
           </div>
         )}
       </nav>
@@ -98,7 +99,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(false)}
-              className="-m-2.5 rounded-md p-2.5 text-gray-800"
+              className="-m-2.5 cursor-pointer rounded-md p-2.5 text-gray-800"
             >
               <span className="sr-only">Close menu</span>
               <XMarkIcon aria-hidden="true" className="size-6" />
@@ -127,12 +128,30 @@ export default function Navbar() {
                 </Link>
               </div>
               <div className="py-6">
-                <Link
+                {isAuthenticated ? (
+                <button
+                  onClick={logout}
+                  className="-mx-3 block cursor-pointer rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
+                >
+                  Log out
+                </button>
+                ):(
+                  <>
+<Link
                   href="/auth/login"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
                 >
                   Log in
                 </Link>
+                <Link
+                  href="/auth/register"
+                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
+                >
+                  register
+                </Link>
+                </>
+                )}
+                
               </div>
             </div>
           </div>
