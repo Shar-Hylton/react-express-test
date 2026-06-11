@@ -10,10 +10,12 @@ import { Input } from "../../../../../components/ui/input";
 import { Textarea } from "../../../../../components/ui/textarea";
 import { Button } from "../../../../../components/ui/button";
 import { useForm, useWatch } from "react-hook-form";
-import { useNotes } from "../../../../../notesContext/NotesContext";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useNotes } from "../../../../../context/NotesContext";
+import { redirect, useParams, useRouter } from "next/navigation";
+import { useEffect} from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { toast } from "react-toastify";
+import { useAuth } from "@/context/AuthContext";
 
 type EditNoteForm = {
   title: string;
@@ -24,7 +26,10 @@ export default function EditNote() {
   const { id } = useParams();
   const router = useRouter();
   const { notes, isLoading, updateNote } = useNotes();
-  const [errorMsg, setErrorMsg] = useState("");
+
+  const {user} = useAuth();
+
+  if (!user) redirect("/auth/login");
 
   const {
     register,
@@ -64,14 +69,18 @@ export default function EditNote() {
       <h1 className="text-center text-4xl mx-auto mt-10">Note not found</h1>
     );
 
+
   const onSubmit = async (data: EditNoteForm) => {
     const result = await updateNote(id as string, data);
     const success = result.success;
-    const err = result.message;
+    const msg = result.message;
     if (!success) {
-      setErrorMsg(err);
+      toast.error(msg);
       return;
     }
+
+    toast.success(msg);
+
     router.replace("/notes");
   };
 
@@ -83,7 +92,6 @@ export default function EditNote() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {errorMsg && <p className="text-red-500">{errorMsg}</p>}
             <div className="relative">
               <Input
                 placeholder="Enter Title"

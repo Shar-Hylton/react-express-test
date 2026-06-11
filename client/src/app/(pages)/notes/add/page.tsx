@@ -5,8 +5,9 @@ import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useNotes } from "@/notesContext/NotesContext";
+import { useNotes } from "@/context/NotesContext";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 type NoteFormData = {
   title: string;
@@ -15,7 +16,6 @@ type NoteFormData = {
 
 export default function AddNote() {
   const {createNote } = useNotes();
-
   const {
     register,
     handleSubmit,
@@ -28,8 +28,15 @@ export default function AddNote() {
   const contentValue = useWatch({control, name: "content"})?.length || 0;
 
   const onSubmit = async (data: NoteFormData) => {
-    await createNote(data);
-    router.replace("/notes");
+    const result = await createNote(data);
+    if(result.success){
+      toast.success(result.message);
+       router.replace("/notes");
+     }else{
+      toast.error(result.message);
+      return;
+     }
+   
   };
 
   

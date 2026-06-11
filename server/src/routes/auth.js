@@ -133,13 +133,15 @@ router.post(
         return res.status(400).json({ errors: [{ msg: "Invalid Password" }], old: req.body });
       }
 
-      req.session.user = {
+      const safeUser = {
         _id: user._id,
-        username:user.username,
-        email:user.email
+        username: user.username,
+        email: user.email,
       };
+
+      req.session.user = safeUser;
       req.session.success = 'Welcome Back!';
-      res.status(200).json({user, msg: 'Log in Successful'})
+      res.status(200).json({ user: safeUser, msg: 'Log in Successful' });
 
     } catch (err) {
       console.error(err);
@@ -168,7 +170,7 @@ router.post('/logout',(req, res)=>{
       });
     }
     res.clearCookie("connect.sid")
-    res.status(204).json({msg: "Logout Successfully"});
+    res.status(200).json({msg: "Logout Successfully"});
   })
 })
 

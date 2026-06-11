@@ -12,6 +12,7 @@ type NoteCardProps = {
   title: string;
   content: string;
   user?: { username: string; email: string };
+  isOwner: boolean;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
 };
@@ -21,6 +22,7 @@ export default function NoteCard({
   title,
   content,
   user,
+  isOwner,
   onDelete,
   onEdit,
 }: NoteCardProps) {
@@ -29,12 +31,13 @@ export default function NoteCard({
       <CardHeader className="w-80 bg-red-700 text-center p-2">
         <CardTitle className="text-xl"><h3>{title}</h3></CardTitle>
       </CardHeader>
-        <CardContent className="flex-grow"><p>{`"${content}"`}</p></CardContent>
+        <CardContent className="grow"><p>{content}</p></CardContent>
         
         <CardDescription className=" text-left w-full px-6 pb-4">
           creator: {user?.username || "unknown"}
         </CardDescription>
-        <div className="flex mt-auto gap-2 px-6 pb-6">
+        {/* {isOwner && (
+          <div className="flex mt-auto gap-2 px-6 pb-6">
           <Button variant="destructive" size="sm" onClick={() => onEdit(id)}>
             Edit
           </Button>
@@ -42,6 +45,16 @@ export default function NoteCard({
             Delete
           </Button>
         </div>
+        )} */}
+        <div className="flex mt-auto gap-2 px-6 pb-6">
+          <Button disabled={!isOwner} variant="destructive" size="sm" onClick={() => onEdit(id)}>
+            Edit
+          </Button>
+          <Button disabled={!isOwner} className="mx-4" variant="destructive" size="sm" onClick={() => onDelete(id)}>
+            Delete
+          </Button>
+        </div>
+        
      
     </Card>
   );

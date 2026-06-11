@@ -47,7 +47,7 @@ router.post(
         title,
         content,
         user: req.session.user._id,
-      }).populate("user", "username email");
+      });
 
       return res.status(201).json({message: "note created successfully", newNote});
       

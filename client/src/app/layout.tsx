@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { NotesProvider } from "../notesContext/NotesContext";
-import { AuthProvider } from "../notesContext/AuthContext";
+import { NotesProvider } from "../context/NotesContext";
+import { AuthProvider } from "../context/AuthContext";
+// import { Toaster } from "@/components/ui/sonner";
+import {ToastContainer} from "react-toastify";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,7 +33,11 @@ export default function RootLayout({
       >
         {" "}
         <AuthProvider>
-          <NotesProvider>{children}</NotesProvider>
+          <NotesProvider>
+            {children}
+            {/* <Toaster richColors position="bottom-right" /> */}
+            <ToastContainer aria-label={"form error"} className={"mt-20"}  />
+          </NotesProvider>
         </AuthProvider>
       </body>
     </html>

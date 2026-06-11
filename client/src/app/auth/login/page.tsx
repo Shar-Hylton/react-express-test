@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {validateEmail, validatePassword} from "@/lib/validation";
-
+import { validateEmail, validatePassword } from "@/lib/validation";
+import { toast } from 'react-toastify';
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -15,18 +15,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {useAuth} from "@/notesContext/AuthContext";
+import { useAuth } from "@/context/AuthContext";
+import { TiArrowBackOutline } from "react-icons/ti";
 
 type UserData = {
   email:string,
   password:string
 }
 
-
 export default function Login() {
   const [form, setForm] = useState<UserData>({ email: "", password: "" });
   const [error, setError] = useState("");
-  const [notification, setNotification] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<{
     email?: boolean;
@@ -37,82 +36,43 @@ export default function Login() {
     password?: boolean;
   }>({});
 
-  const {login} = useAuth();
+  const { userLogin } = useAuth();
 
   const isEnabled = isValid.email && isValid.password && !isLoading;
 
   const router = useRouter();
 
-  const userLogin = async (data:UserData) => {
-    setError("");
-    setNotification("");
-
-    if (!form.email.trim()) {
-      setError("Enter your email");
-      setIsLoading(false);
-      return;
-    }
-    if (!form.password.trim()) {
-      setError("Enter your password");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      console.log("Submitting login request");
-      const response = await fetch("http://localhost:8000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
-      const resData = await response.json();
-
-      console.log("Response received:", response.status);
-
-      if (!response.ok) {
-        // server sends `errors` (array) or a message; normalize it
-        const errMsg =
-          resData?.errors[0]?.msg ?? "Request failed";
-        setError(errMsg);
-        return;
-      }
-      login(resData.user)
-      setForm({ ...form, email: "" });
-      router.push("/notes");
-      // setIsValid({...isValid, password: false});
-      setNotification(resData?.msg);
-    } catch (error) {
-      console.error(error);
-      // setPassword("");
-      setError("System Failure, try again later. ");
-      setIsValid({...isValid, password: false});
-    } finally {
-      setForm({ ...form, password: "" });
-      setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+
     if (!isValid.email || !isValid.password) {
       setTouched({ email: true, password: true });
+      
       return;
     }
 
-    setIsLoading(true);
-    userLogin({...form});
+    const result = await userLogin({ ...form });
+
+    if (!result || !result.success) {
+      setError(result?.message || "Failed to log in> Please try again");
+      setForm({ ...form, password: "" });
+      setIsValid({ ...isValid, password: false });
+      setIsLoading(false);
+      return;
+    }
+
+    toast.success(result.message)
+
+    setForm({ ...form, email: "", password: "" });
+    setIsLoading(false);
+
+    router.replace("/notes");
   };
 
   return (
     <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 px-4">
-      {notification && (
-        <ul className="text-green-500 mb-8 list-disc">
-          <li>{notification}</li>
-        </ul>
-      )}
+      
       {error && (
         <ul className="text-red-500 mt-8 mb-8 list-disc">
           <li>{error}</li>
@@ -176,7 +136,7 @@ export default function Login() {
                   setForm({ ...form, password: e.target.value });
                   setIsValid({
                     ...isValid,
-                    password: validatePassword(e.target.value),
+                    password: validatePassword(e.target.value).success,
                   });
                   setError("");
                 }}
@@ -216,8 +176,15 @@ export default function Login() {
               Register
             </Link>
           </p>
+          <Link
+              href="/"
+              className="flex justify-center text-white underline-offset-4 hover:underline mt-4"
+            >
+              <TiArrowBackOutline size={24}/>{" "} Go Back
+            </Link>
         </CardContent>
       </Card>
+       
     </div>
   );
 }

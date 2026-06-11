@@ -21,7 +21,7 @@ For Example, one render sees useForm, useEffeck, UseState. If your code has a co
 
 ``FIX``
 Move conditionals after declaring and using React hooks.
--- Code on edit page; line: 30-62 - error using declaring if statements before useEffect and useForm hooks.
+- Code on edit page; line: 30-62 - error using declaring if statements before useEffect and useForm hooks.
 
 # removing file from git staging 
 
@@ -46,3 +46,10 @@ This command:
 ``hint: use 'git pull' before pushing again.``
 ``hint: See the 'Note about fast-forwards' in 'git push --help' for details.``
 
+## When Routing between pages
+
+- So when routing through pages, it be a good practice to allow authentication/authorization checks first before rendering, or else there might be glitches or temporary load pages. you can show spinner or skeleton page loader for better UX.
+- Use Replace, Redirect and Push in the right way.
+`Replace` replaces the last load page.
+`Redirect` sends unauthorized users else where.
+`Push` routes to the page and remember where you are coming from. It adds that route to the stack.

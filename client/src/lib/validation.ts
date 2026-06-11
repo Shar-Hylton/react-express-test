@@ -1,16 +1,19 @@
+import { validPasswordMsg } from "@/constants/index";
+
 export function validateEmail(email: string): boolean {
     if (!email.trim()) return false;
     const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     return regex.test(email.trim());
   };
 
-export function validatePassword (password: string): boolean {
-    if (!password) return false;
-    if (password.length < 8) return false;
-    if (!/[A-Z]/.test(password)) return false;
-    if (!/[0-9]/.test(password)) return false;
-    if (!/[^A-Za-z0-9]/.test(password)) return false
-    return true;
+export function validatePassword (password: string): {success: boolean, message?:string}{
+    if (!password) return {success: false, message: validPasswordMsg[0]};
+    if (password.length < 8) return {success: false, message: validPasswordMsg[0]};
+    if (!/[A-Z]/.test(password)) return {success: false, message: validPasswordMsg[1]};
+    if (!/[0-9]/.test(password)) return {success: false, message: validPasswordMsg[2]};
+    if (!/[^A-Za-z0-9]/.test(password)) return {success: false, message: validPasswordMsg[3]};
+    return {success: true, message: undefined};
+    
   };
 
 export function validateUsername (username: string): boolean {
