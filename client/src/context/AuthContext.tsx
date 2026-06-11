@@ -1,0 +1,212 @@
+"use client";
+
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+  useCallback,
+  useRef,
+} from "react";
+import { usePathname } from "next/navigation";
+
+type User = {
+  _id: string;
+  username: string;
+  email: string;
+};
+
+type UserData = {
+  email: string;
+  password: string;
+};
+
+type AuthContextType = {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  isLoggingOut: boolean;
+  login: (userData: User) => void;
+  userLogin: (data: UserData)  => Promise<{success:boolean, message:string}>;
+  logout: () => Promise<boolean>;
+  refreshAuth: (options?: { background?: boolean }) => Promise<void>;
+};
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const refreshController = useRef<AbortController | null>(null);
+  const pathname = usePathname();
+
+  const refreshAuth = useCallback(
+    async (options?: { background?: boolean }) => {
+      if (refreshController.current) {
+        refreshController.current.abort();
+      }
+
+      const controller = new AbortController();
+      refreshController.current = controller;
+
+      if (!options?.background) {
+        setIsLoading(true);
+      }
+
+      try {
+        const res = await fetch("http://localhost:8000/auth/me", {
+          credentials: "include",
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          setUser(null);
+          return;
+        }
+
+        const data = await res.json();
+        setUser(data.user);
+      } catch (error: unknown) {
+        if (error instanceof DOMException && error.name === "AbortError")
+          return;
+        console.log(error);
+        setUser(null);
+      } finally {
+        if (!options?.background) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    refreshAuth();
+  }, [refreshAuth]);
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      refreshAuth({ background: true });
+    }
+  }, [pathname, isLoading, user, refreshAuth]);
+
+  useEffect(() => {
+    return () => {
+      refreshController.current?.abort();
+    };
+  }, []);
+
+  const login = (userData: User) => {
+    setUser(userData);
+  };
+
+  const userLogin = async (data: UserData) => {
+    if (!data.password.trim()) {
+      return {
+        success: false,
+        message: "Enter your password",
+      };
+    }
+
+    if (!data.email.trim()) {
+      return {
+        success: false,
+        message: "Enter your email",
+      };
+    }
+
+    try {
+      console.log("Submitting login request");
+      const response = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      const resData = await response.json();
+
+      console.log("Response received:", response.status);
+
+      if (!response.ok) {
+        const errMsg = resData?.errors?.[0]?.msg ?? "Request failed";
+
+        return {
+          success: false,
+          message: errMsg,
+        };
+      }
+
+      login(resData.user);
+
+       return {
+        success: true,
+        message: resData?.msg || "Login successful",
+      };
+     
+    } catch (error) {
+      console.error(error);
+      return {
+          success: false,
+          message: "System Failure, try again later.",
+        };
+
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+
+  const logout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const response = await fetch("http://localhost:8000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        console.log("Logout failed");
+        return false;
+      }
+
+      sessionStorage.removeItem("notes_cache");
+      setUser(null);
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }finally{
+      setIsLoggingOut(false);
+    }
+  };
+
+  const value: AuthContextType = {
+    user,
+    isAuthenticated: !!user,
+    isLoading,
+    isLoggingOut,
+    userLogin,
+    login,
+    logout,
+    refreshAuth,
+  };
+  return (
+    <AuthContext.Provider value={value}>
+      {isLoading ? null : children}
+    </AuthContext.Provider>
+  );
+}
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+
+  return context;
+};

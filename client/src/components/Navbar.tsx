@@ -4,13 +4,25 @@ import { useState } from "react";
 import { Dialog, DialogPanel, PopoverGroup } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { useAuth } from "@/notesContext/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
-
+  const { user, isLoggingOut, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const router = useRouter();
+
+  const handleLogOut = async () => {
+    
+    const success = await logout();
+    setMobileMenuOpen(false);
+
+    if (success) {
+      router.replace("/auth/login");
+    }
+  };
 
   return (
     <header className="fixed top-0 bg-white border-b border-gray-400/30 w-full z-50">
@@ -20,7 +32,7 @@ export default function Navbar() {
       >
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
-            <span className="sr-only">Home</span>
+              <span className="sr-only">Home</span>
             <img
               alt=""
               src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
@@ -51,14 +63,17 @@ export default function Navbar() {
           <Link href="#" className="text-sm/6 font-semibold text-gray-800">
             Help
           </Link>
+
+          {user && (<span className="sr-only"></span>)}
         </PopoverGroup>
         {isAuthenticated ? (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <Button
-              onClick={logout}
+              onClick={handleLogOut}
+              disabled={isLoggingOut}
               className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
             >
-              Log out <span aria-hidden="true">&rarr;</span>
+              {isLoggingOut ? "Signing out..." : "Log out"}
             </Button>
           </div>
         ) : (
@@ -69,14 +84,13 @@ export default function Navbar() {
             >
               Log in <span aria-hidden="true">&rarr;</span>
             </Link>
-           
-              <Link
-                href="/auth/register"
-                className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
-              >
-                Register <span aria-hidden="true">&rarr;</span>
-              </Link>
-            
+
+            <Link
+              href="/auth/register"
+              className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
+            >
+              Register <span aria-hidden="true">&rarr;</span>
+            </Link>
           </div>
         )}
       </nav>
@@ -109,7 +123,7 @@ export default function Navbar() {
             <div className="-my-6 divide-y divide-gray-200">
               <div className="space-y-2 py-6">
                 <Link
-                  href="notes"
+                  href="/notes"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
                 >
                   Notes
@@ -129,29 +143,31 @@ export default function Navbar() {
               </div>
               <div className="py-6">
                 {isAuthenticated ? (
-                <button
-                  onClick={logout}
-                  className="-mx-3 block cursor-pointer rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
-                >
-                  Log out
-                </button>
-                ):(
+                  <button
+                    onClick={handleLogOut}
+                    disabled={isLoggingOut}
+                    className="-mx-3 block cursor-pointer rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
+                  >
+                    {isLoggingOut ? "Signing out..." : "Log out"}
+                  </button>
+                ) : (
                   <>
-<Link
-                  href="/auth/login"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
-                >
-                  Log in
-                </Link>
-                <Link
-                  href="/auth/register"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
-                >
-                  register
-                </Link>
-                </>
+                    <Link
+                      href="/auth/login"
+                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      register
+                    </Link>
+                  </>
                 )}
-                
               </div>
             </div>
           </div>

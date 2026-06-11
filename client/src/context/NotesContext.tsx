@@ -7,12 +7,19 @@ import {
   useEffect,
 } from "react";
 
+type User = {
+  _id: string; 
+  username: string; 
+  email: string 
+}
+
 type Note = {
   _id: string;
   title: string;
   content: string;
-  user: { username: string; email: string };
+  user?: User;
 };
+
 
 type NotesContextType = {
   notes: Note[];
@@ -22,8 +29,8 @@ type NotesContextType = {
     id: string,
     data: { title: string; content: string },
   ) => Promise<{success:boolean, message:string}>;
-  createNote: (data: { title: string; content: string }) => Promise<void>;
-  deleteNote: (id: string) => Promise<void>;
+  createNote: (data: { title: string; content: string }) => Promise<{success:boolean; message:string}>;
+  deleteNote: (id: string) => Promise<{success:boolean; message:string}>;
 };
 const NOTES_CACHE_KEY = "notes_cache";
 
@@ -64,9 +71,12 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       const resData = await response.json();
 
       if (!response.ok) {
-        const msg = resData?.errors[0]?.msg ?? "Failed to create note";
+        const msg = resData?.errors?.[0]?.msg || resData?.error || "Failed to create note";
         console.log(msg);
-        return;
+        return{
+          success:false,
+          message: msg,
+        };
       }
 
       setNotes((prev) => {
@@ -75,9 +85,17 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         return updated;
       });
 
+      return {
+        success:true,
+        message: resData?.message,
+      }
     } catch (error) {
-     
       console.log(error);
+      return {
+       success: false,
+       message: "Server error, Failed to create note",
+
+      }
     }
   };
 
@@ -94,10 +112,11 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+     
       const resData = await response.json();
       
       if (!response.ok) {
-        const msg = resData?.errors[0]?.msg ?? "Failed to update note";
+        const msg = resData?.errors?.[0]?.msg || resData?.error || "Failed to update note";
         console.log(msg);
         return {
           success:false,
@@ -115,13 +134,13 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       
       return {
           success:true,
-          message: "Note updated successfully"
+          message: resData.message || "Note updated successfully"
         };
     } catch (error) {
       console.log(error);
       return {
           success:false,
-          message: "Failed to update note"
+          message: "Failed to update note",
         };
     }
     
@@ -173,12 +192,15 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         method: "DELETE",
         credentials: "include",
       });
-      const data = await response.json();
+      const resData = await response.json();
 
       if (!response.ok) {
-        const msg = data?.errors?.[0]?.msg ?? "Failed to delete note";
+        const msg = resData?.error || resData?.errors[0]?.msg || "Failed to delete note";
         console.log(msg);
-        return;
+        return {
+          success:false,
+          message: msg
+        };
       }
 
       setNotes((prev) => {
@@ -186,8 +208,18 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         saveNotesToCache(updated);
         return updated;
       });
+      
+        return{
+          success:true,
+          message: resData?.message || "Note successfully deleted!"
+        }
+      
     } catch (error) {
       console.log(error);
+      return{
+        success: false,
+        message: "Server error, please try again later."
+      }
     }
   };
 

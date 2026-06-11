@@ -1,31 +1,40 @@
 import NoteCard from "./NoteCard";
-import { useNotes } from "../notesContext/NotesContext";
+import { useNotes } from "../context/NotesContext";
 import { useRouter } from "next/navigation";
 import { Spinner } from "./ui/spinner";
+import { toast } from "react-toastify";
+import { useAuth } from "@/context/AuthContext";
 
 export default function NotesList() {
   const { isLoading, notes, deleteNote } = useNotes();
+  const { user } = useAuth();
 
   const router = useRouter();
 
   const handleDelete = async (id: string) => {
     const confirmed = confirm("Are you sure you want to delete this note?");
     if (!confirmed) return;
-    await deleteNote(id);
+    const result = await deleteNote(id);
+
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
   };
   const handleEdit = (id: string) => {
     router.push(`notes/edit/${id}`);
   };
 
-  if(isLoading){
+  if (isLoading) {
     return (
       <div className=" w-full flex items-center justify-center mt-30">
         <Spinner className="size-16 text-blue" />
       </div>
     );
   }
-  // console.log(notes);
-// If a there is no note created, users should see Create the first Note.
+
+  // If there is no note created, users should see Create the first Note.
   // if(!isLoading && !notes){
   //   return (
   //     <div className=" w-full flex items-center justify-center mt-30">
@@ -35,17 +44,22 @@ export default function NotesList() {
   // }
   return (
     <div className="flex flex-wrap justify-center gap-8">
-      {notes.map((note) => (
-        <NoteCard
-          key={note?._id}
-          id={note?._id}
-          title={note?.title}
-          content={note?.content}
-          user={note?.user}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-        />
-      ))}
+      {notes.map((note) => {
+        const isOwner = note.user?._id === user?._id;
+
+        return (
+          <NoteCard
+            key={note?._id}
+            id={note?._id}
+            title={note?.title}
+            content={note?.content}
+            user={note?.user}
+            isOwner={isOwner}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
+        );
+      })}
     </div>
   );
 }

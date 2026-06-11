@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { toast } from "react-toastify";
 import {
   Card,
   CardContent,
@@ -22,15 +23,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
+import { TiArrowBackOutline } from "react-icons/ti";
 
 export default function Register() {
-
   type UserData = {
-    username: string,
-    email: string,
-    password: string,
-    confirmPassword: string,
-  }
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  };
+
+  type ValidationResult = {
+    success: boolean;
+    message?: string;
+  };
 
   const [form, setForm] = useState<UserData>({
     username: "",
@@ -39,12 +45,11 @@ export default function Register() {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
-  const [notification, setNotification] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<{
     email?: boolean;
     username?: boolean;
-    password?: boolean;
+    password?: ValidationResult;
     confirmPassword?: boolean;
   }>({});
   const [touched, setTouched] = useState<{
@@ -54,18 +59,12 @@ export default function Register() {
     confirmPassword?: boolean;
   }>({});
 
-  const validPasswordMsg = [
-    "Must be atleast 8 characters",
-    "Must contain atleast 1 uppercase letter",
-    "Must contain atleast 1 number",
-    "Must contain atleast 1 special character (@,$,#...)",
-  ];
-
   const router = useRouter();
+
+  const passwordMsg = isValid.password?.message;
 
   const userRegister = async (data: UserData) => {
     setError("");
-    setNotification("");
 
     if (!form.username.trim()) {
       setError("Enter your username");
@@ -102,15 +101,14 @@ export default function Register() {
       const resData = await response.json();
 
       if (!response.ok) {
-        const errMsg = resData?.errors[0]?.msg ??
-          "Request failed";
+        const errMsg = resData?.errors[0]?.msg ?? "Request failed";
         setError(errMsg);
 
         return;
       }
       setForm({ ...form, email: "", username: "" });
-      setNotification("Register Successful");
-      router.push("/")
+      toast.success("Register Successful");
+      router.push("/notes");
       console.log("log in successful");
     } catch (error) {
       console.error(error);
@@ -129,14 +127,12 @@ export default function Register() {
       return;
     }
     setIsLoading(true);
-    userRegister?.({...form});
+    userRegister?.({ ...form });
   };
-
+  console.log(isValid.password);
+  console.log(passwordMsg);
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 px-4">
-      {notification && (
-        <div className="text-green-500 mb-8">{notification}</div>
-      )}
+    <div className="flex flex-col min-h-screen items-center justify-center bg-linear-to-br from-zinc-950 via-zinc-900 to-zinc-950 px-4">
       {error && (
         <ul className="text-red-500 mb-8 list-disc">
           <li>{error}</li>
@@ -240,19 +236,16 @@ export default function Register() {
                 className="bg-zinc-950 border-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-zinc-600 mt-2"
                 required
               />
-              {touched.password && !isValid.password && (
+              {touched.password && !isValid.password?.success && (
                 <div className="mt-1 ml-2">
                   <p className="text-sm text-red-500">Enter strong password!</p>
-                  <ul>
-                    {validPasswordMsg.map((msg, index) => (
-                      <li
-                        key={index}
-                        className="text-sm text-red-500 ml-4 list-disc"
-                      >
-                        {msg}
+                  {form.password.length > 0 && (
+                    <ul>
+                      <li className="text-sm text-red-500 ml-4 list-disc">
+                        {passwordMsg}
                       </li>
-                    ))}
-                  </ul>
+                    </ul>
+                  )}
                 </div>
               )}
             </div>
@@ -274,7 +267,7 @@ export default function Register() {
                     ...isValid,
                     confirmPassword: validateConfirmPassword(
                       form.password,
-                      e.target.value
+                      e.target.value,
                     ),
                   });
                   setError("");
@@ -295,7 +288,13 @@ export default function Register() {
             </div>
             <Button
               type="submit"
-              disabled={ !isValid.email || !isValid.username || !isValid.password || !isValid.confirmPassword || isLoading}
+              disabled={
+                !isValid.email ||
+                !isValid.username ||
+                !isValid.password ||
+                !isValid.confirmPassword ||
+                isLoading
+              }
               className="w-full mt-2 bg-white text-black cursor-pointer hover:bg-zinc-400/70 transition"
             >
               {isLoading ? (
@@ -319,6 +318,12 @@ export default function Register() {
             </Link>
           </p>
         </CardContent>
+        <Link
+          href="/"
+          className="flex justify-center text-white underline-offset-4 hover:underline"
+        >
+          <TiArrowBackOutline size={24} /> Go Back
+        </Link>
       </Card>
     </div>
   );
