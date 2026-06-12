@@ -23,11 +23,11 @@ export default function Notes() {
     <>
     {isLoggingOut || user == null ? (
        <div className=" w-full flex items-center justify-center mt-30">
-        <Spinner className="size-16 text-blue" />
+        <Spinner className="size-24 text-blue" />
       </div>
     ):(
 
-    <div className="mt-10 mx-auto bg-yellow-700">
+    <div className="mt-10 mx-auto">
       <div className="flex justify-center mb-10">
         <Button className="cursor-pointer" onClick={handleAdd}>
           Create Note
