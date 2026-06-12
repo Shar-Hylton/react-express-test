@@ -27,9 +27,9 @@ export default function NoteCard({
   onEdit,
 }: NoteCardProps) {
   return (
-    <Card className="flex flex-col items-center w-sm h-auto ">
-      <CardHeader className="w-80 bg-red-700 text-center p-2">
-        <CardTitle className="text-xl"><h3>{title}</h3></CardTitle>
+    <Card className="flex flex-col items-center w-sm h-auto">
+      <CardHeader className="w-80 underline text-center p-2">
+        <CardTitle className="text-xl font-bold"><h3>{title}</h3></CardTitle>
       </CardHeader>
         <CardContent className="grow"><p>{content}</p></CardContent>
         
