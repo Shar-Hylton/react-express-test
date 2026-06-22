@@ -24,8 +24,11 @@ import {
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { TiArrowBackOutline } from "react-icons/ti";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Register() {
+  const { isLoading, userRegistration } = useAuth();
+
   type UserData = {
     username: string;
     email: string;
@@ -45,7 +48,6 @@ export default function Register() {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<{
     email?: boolean;
     username?: boolean;
@@ -63,74 +65,50 @@ export default function Register() {
 
   const passwordMsg = isValid.password?.message;
 
-  const userRegister = async (data: UserData) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     setError("");
+
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
 
     if (!form.username.trim()) {
       setError("Enter your username");
-      setIsLoading(false);
       return;
     }
     if (!form.email.trim()) {
       setError("Enter your email");
-      setIsLoading(false);
       return;
     }
 
     if (!form.password.trim()) {
       setError("Enter your password");
-      setIsLoading(false);
       return;
     }
 
     if (!form.confirmPassword.trim()) {
       setError("Enter confirm password");
-      setIsLoading(false);
       return;
     }
 
-    try {
-      const response = await fetch("http://localhost:8000/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
-      const resData = await response.json();
+    const result = await userRegistration({ ...form });
 
-      if (!response.ok) {
-        const errMsg = resData?.errors[0]?.msg ?? "Request failed";
-        setError(errMsg);
-
-        return;
-      }
-      setForm({ ...form, email: "", username: "" });
-      toast.success("Register Successful");
-      router.push("/notes");
-      console.log("log in successful");
-    } catch (error) {
-      console.error(error);
-      setError("System Failure, try again later. ");
-    } finally {
+    if (!result.success) {
       setForm({ ...form, password: "", confirmPassword: "" });
-      setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (form.confirmPassword && form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
+      setError(result.message);
       return;
     }
-    setIsLoading(true);
-    userRegister?.({ ...form });
+    setForm({ email: "", username: "", password: "", confirmPassword: "" });
+    toast.success("Register Successful");
+    // setIsLoading(true);
+    // userRegister?.({ ...form });
+    router.replace("/notes");
   };
-  console.log(isValid.password);
-  console.log(passwordMsg);
+
   return (
     <div className="flex flex-col min-h-screen items-center justify-center bg-linear-to-br from-zinc-950 via-zinc-900 to-zinc-950 px-4">
       {error && (

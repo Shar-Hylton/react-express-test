@@ -6,22 +6,25 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
+import { RiQuillPenAiLine } from "react-icons/ri";
+
+import { FaCircleUser } from "react-icons/fa6";
+import { toast } from "react-toastify";
 
 export default function Navbar() {
-  const { user, isLoggingOut, isAuthenticated, logout } = useAuth();
+  const { user, isLoading, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const router = useRouter();
 
   const handleLogOut = async () => {
-    
-    const success = await logout();
+    const result = await logout();
+    if(!result.success){
+      toast.error(result.message);
+      return;
+    } 
+    toast.success(result.message);
     setMobileMenuOpen(false);
-
-    if (success) {
-      router.replace("/auth/login");
-    }
+    
   };
 
   return (
@@ -32,12 +35,8 @@ export default function Navbar() {
       >
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
-              <span className="sr-only">Home</span>
-            <img
-              alt=""
-              src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-              className="h-8 w-auto"
-            />
+            <span className="sr-only">Home</span>
+           <RiQuillPenAiLine size={40} aria-label="log in button"/>
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -63,36 +62,47 @@ export default function Navbar() {
           <Link href="#" className="text-sm/6 font-semibold text-gray-800">
             Help
           </Link>
-
-          {user && (<span className="sr-only"></span>)}
         </PopoverGroup>
+        
+        <div className="hidden lg:flex lg:flex-1 items-center lg:justify-end">
+
+          <div className="bg-amber-200 mx-16 rounded-2xl">
+          
+          {user && (
+            <p className="text-black capitalize p-2">
+              Hi {user.username}
+            </p>
+          )}
+  
+        </div>
         {isAuthenticated ? (
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+          
             <Button
               onClick={handleLogOut}
-              disabled={isLoggingOut}
-              className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
+              disabled={isLoading}
+              className="text-sm/6 font-semibold btn p-5 rounded-md"
             >
-              {isLoggingOut ? "Signing out..." : "Log out"}
+              {isLoading ? "Signing out..." : "Log out"}
             </Button>
-          </div>
+          
         ) : (
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+          <>
             <Link
               href="/auth/login"
-              className="text-sm/6 font-semibold mx-2 text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
             >
-              Log in <span aria-hidden="true">&rarr;</span>
+              <FaCircleUser color={"gray"} aria-details="log in" size={30} />
             </Link>
 
-            <Link
+            {/* <Link
               href="/auth/register"
               className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
             >
               Register <span aria-hidden="true">&rarr;</span>
-            </Link>
-          </div>
+            </Link> */}
+            </>
+          
         )}
+        </div>
       </nav>
       <Dialog
         open={mobileMenuOpen}
@@ -145,10 +155,10 @@ export default function Navbar() {
                 {isAuthenticated ? (
                   <button
                     onClick={handleLogOut}
-                    disabled={isLoggingOut}
+                    disabled={isLoading}
                     className="-mx-3 block cursor-pointer rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
                   >
-                    {isLoggingOut ? "Signing out..." : "Log out"}
+                    {isLoading ? "Signing out..." : "Log out"}
                   </button>
                 ) : (
                   <>
@@ -168,6 +178,13 @@ export default function Navbar() {
                     </Link>
                   </>
                 )}
+                <div>
+                  {user && (
+                    <p className="text-md text-zinc-500 capitalize">
+                      username: {user.username}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>

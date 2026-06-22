@@ -15,5 +15,8 @@ export function middleware(req: NextRequest){
 }
 
 export const config = {
-  matcher: ["/notes/:path*"],
+  matcher: [
+    "/notes/edit/:path*",
+    "/notes/add"
+  ],
 };

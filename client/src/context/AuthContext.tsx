@@ -15,6 +15,7 @@ type User = {
   _id: string;
   username: string;
   email: string;
+  role: "user" | "admin";
 };
 
 type UserData = {
@@ -22,14 +23,23 @@ type UserData = {
   password: string;
 };
 
+type RegisteredUser = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
 type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  isLoggingOut: boolean;
+  userRegistration: (
+    userData: RegisteredUser,
+  ) => Promise<{ success: boolean; message: string }>;
   login: (userData: User) => void;
-  userLogin: (data: UserData)  => Promise<{success:boolean, message:string}>;
-  logout: () => Promise<boolean>;
+  userLogin: (data: UserData) => Promise<{ success: boolean; message: string }>;
+  logout: () => Promise<{ success: boolean; message: string }>;
   refreshAuth: (options?: { background?: boolean }) => Promise<void>;
 };
 
@@ -38,9 +48,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const refreshController = useRef<AbortController | null>(null);
   const pathname = usePathname();
+
+  // const router = useRouter();
 
   const refreshAuth = useCallback(
     async (options?: { background?: boolean }) => {
@@ -98,25 +109,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const userRegistration = async (data: RegisteredUser) => {
+    try {
+      const response = await fetch("http://localhost:8000/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      const resData = await response.json();
+
+      if (!response.ok) {
+        const errMsg = resData?.errors[0]?.msg ?? "Request failed";
+        return {
+          success: false,
+          message: errMsg,
+        };
+      }
+      console.log("log in successful");
+
+      setUser(resData.newUser);
+      return {
+        success: true,
+        message: "log in successful",
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        success: false,
+        message: "System Failure, try again later. ",
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const login = (userData: User) => {
     setUser(userData);
   };
 
   const userLogin = async (data: UserData) => {
-    if (!data.password.trim()) {
-      return {
-        success: false,
-        message: "Enter your password",
-      };
-    }
-
-    if (!data.email.trim()) {
-      return {
-        success: false,
-        message: "Enter your email",
-      };
-    }
-
     try {
       console.log("Submitting login request");
       const response = await fetch("http://localhost:8000/auth/login", {
@@ -142,45 +176,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       login(resData.user);
 
-       return {
+      return {
         success: true,
         message: resData?.msg || "Login successful",
       };
-     
     } catch (error) {
       console.error(error);
       return {
-          success: false,
-          message: "System Failure, try again later.",
-        };
-
+        success: false,
+        message: "System Failure, try again later.",
+      };
     } finally {
       setIsLoading(false);
     }
   };
-  
 
   const logout = async () => {
-    setIsLoggingOut(true);
     try {
       const response = await fetch("http://localhost:8000/auth/logout", {
         method: "POST",
         credentials: "include",
       });
+      const resData = await response.json();
 
       if (!response.ok) {
+        const errMsg = resData?.msg;
         console.log("Logout failed");
-        return false;
+        return { success: false, message: errMsg };
       }
 
       sessionStorage.removeItem("notes_cache");
       setUser(null);
-      return true;
+    
+      return {
+        success: true,
+        message: resData?.msg || "Successfully logged out",
+      };
     } catch (error) {
       console.log(error);
-      return false;
-    }finally{
-      setIsLoggingOut(false);
+      return { success: false, message: "Server Error" };
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -188,7 +224,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     isAuthenticated: !!user,
     isLoading,
-    isLoggingOut,
+    userRegistration,
     userLogin,
     login,
     logout,

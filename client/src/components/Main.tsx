@@ -1,17 +1,61 @@
-import React from "react";
+import { TiArrowForwardOutline } from "react-icons/ti";
+import { useRouter } from "next/navigation";
+import { Button } from "./ui/button";
+import { intro } from "@/constants";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
 export default function Home() {
+  useGSAP(() => {
+    gsap.fromTo(
+      "h1",
+      {
+        y: 50,
+        opacity: 0,
+      },
+      {
+        y: 0,
+        opacity: 1,
+        stagger: 0.2,
+        duration: 1.5,
+        ease: "power2.inOut",
+      },
+    );
+    // gsap.fromTo(
+    //   "p",
+    // )
+  });
+
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push("/notes");
+  };
   return (
-    <div>
-      <h1 className="mx-auto text-gray-500">Welcome to My Notes Project</h1>
-      <p className="text-gray-500">
-        In this project we will be building our first interactive UI with UX, by
-        creating Authentication and Authorization for users and Notes. As a user
-        you will have your own notes. Each notes belongs to diffferent users
-        across the globe, and only that user will have, edit or delete rights /
-        permission to the contents of the note, besides Admin. However, all
-        users have permission to view a note.
+    <main className="flex w-full max-w-3xl flex-col items-center justify-between bg-zinc-250 dark:bg-black ">
+      <h1 className=" text-7xl text-center py-16 text-zinc-100">
+        Welcome To My Notes Project
+      </h1>
+      <br />
+      <div className="text-transition">
+        <p className="text-p text-motion">
+        {intro.map((word)=>(
+          word
+        ))}
       </p>
-    </div>
+
+      </div>
+      
+      <div className=" flex mt-8 h-10 ">
+        <Button
+          variant="none"
+          className=" btn btn-float my-4 mx-auto items-center justify-center"
+          onClick={handleClick}
+        >
+          
+          <TiArrowForwardOutline /> Notes Page
+        </Button>
+      </div>
+    </main>
   );
 }

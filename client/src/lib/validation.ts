@@ -1,4 +1,4 @@
-import { validPasswordMsg } from "@/constants/index";
+import { validPasswordMsg } from "@/constants/index.js";
 
 export function validateEmail(email: string): boolean {
     if (!email.trim()) return false;
@@ -25,7 +25,8 @@ export function validateUsername (username: string): boolean {
 
  export function validateConfirmPassword (password: string, confirmPassword: string): boolean {
     if (!password || !confirmPassword) return false;  
-    if (confirmPassword !== password ) return false;
-
-    return true;
+    // if (confirmPassword !== password ) return false;
+    const result = validatePassword(confirmPassword);
+    if(!result.success) return false;
+     return true;
   }; 

@@ -27,3 +27,7 @@ Import chevron for back redirect or FaUser, FaSignInAlt, FaSignOutAlt, FaBuildin
 * axios
 ============
 - npm i axios
+
+* GSAP useGSAP
+==============
+- npm i gsap @gsap/react

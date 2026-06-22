@@ -52,10 +52,20 @@ export default function Login() {
       return;
     }
 
+    if (!form.password.trim()) {
+     setError("Enter your password");
+      return;
+    }
+
+    if (!form.email.trim()) {
+      setError("Enter your email");
+      return; 
+    }
+    
     const result = await userLogin({ ...form });
 
     if (!result || !result.success) {
-      setError(result?.message || "Failed to log in> Please try again");
+      setError(result?.message || "Failed to log in. Please try again");
       setForm({ ...form, password: "" });
       setIsValid({ ...isValid, password: false });
       setIsLoading(false);
@@ -64,10 +74,10 @@ export default function Login() {
 
     toast.success(result.message)
 
-    setForm({ ...form, email: "", password: "" });
+    setForm({ email: "", password: "" });
     setIsLoading(false);
 
-    router.replace("/notes");
+    router.replace("/notes?login=success");
   };
 
   return (
