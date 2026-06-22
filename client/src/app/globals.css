@@ -6,6 +6,101 @@ body{
   min-height: 100vh;
 }
 
+/* animation Starts */
+
+.text-motion {
+  display: flex;
+  flex-direction: column;
+  animation: move-up 15s infinite cubic-bezier(0.9, 0.01, 0.3, 0.99);
+}
+
+@keyframes move-up {
+  0% {
+    transform: translateY(0.5%);
+  }
+  12.5% {
+    transform: translateY(-12.5%);
+  }
+  25% {
+    transform: translateY(-25%);
+  }
+  37.5% {
+    transform: translateY(-37.5%);
+  }
+  /* 50% {
+    transform: translateY(-50%);
+  } */
+  /* 62.5% {
+    transform: translateY(-62.5%);
+  }
+  75% {
+    transform: translateY(-75%);
+  }
+  87.5% {
+    transform: translateY(-87.5%);
+  } */
+}
+
+.btn-float{
+  animation: float-up-down 5s infinite cubic-bezier(0.9, 0.01, 0.3, 0.99);
+}
+
+@keyframes float-up-down {
+  0% {
+    transform: translateY(0.5%);
+  }
+  12.5% {
+    transform: translateY(-12.5%);
+  }
+  25% {
+    transform: translateY(-25%);
+  }
+  37.5% {
+    transform: translateY(-37.5%);
+  }
+}
+
+/* animation ends */
+
+
+/* Card Animation */
+.perspective {
+  perspective: 1200px;
+}
+
+.card-3d {
+  transform-style: preserve-3d;
+}
+
+.card-face {
+  backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+
+/* End Card Animation */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(120, 120, 120, 0.35);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 120, 120, 0.55);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -127,3 +222,27 @@ body{
   }
 }
 
+@layer utilities{
+  .text-transition {
+    
+    
+    .text-p{
+      @apply  text-lg text-amber-200 text-justify;
+    }
+    
+  }
+
+  .btn {
+    @apply text-zinc-100 p-5 rounded-2xl bg-blue-500 outline-1 border-2 border-zinc-100 cursor-pointer;
+  }
+
+  .card-animation{
+    @apply transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl;
+  }
+}
+
+/* @layer components{
+  .card-transition{
+    @apply ;
+  }
+} */

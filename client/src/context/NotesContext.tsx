@@ -18,6 +18,8 @@ type Note = {
   title: string;
   content: string;
   user?: User;
+  createdAt: string;
+  updatedAt: string;
 };
 
 
@@ -80,7 +82,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       }
 
       setNotes((prev) => {
-        const updated = [resData.newNote, ...prev];
+        const updated = [resData.myNote, ...prev];
         saveNotesToCache(updated);
         return updated;
       });

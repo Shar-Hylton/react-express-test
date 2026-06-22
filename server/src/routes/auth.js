@@ -79,7 +79,7 @@ router.post(
       };
 
       req.session.success = "Registered Successfully";
-      res.status(201).json({ msg: "Registered Successfully" });
+      res.status(201).json({ msg: "Registered Successfully", newUser });
     } catch (err) {
       console.error(err);
       res
@@ -137,6 +137,7 @@ router.post(
         _id: user._id,
         username: user.username,
         email: user.email,
+        role:user.role,
       };
 
       req.session.user = safeUser;
@@ -166,7 +167,7 @@ router.post('/logout',(req, res)=>{
   req.session.destroy((err)=> {
     if(err) {
       return res.status(500).json({
-        errors: [{msg: "Failed to logout"}],
+        msg: "Failed to logout"
       });
     }
     res.clearCookie("connect.sid")

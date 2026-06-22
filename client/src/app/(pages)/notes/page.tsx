@@ -8,10 +8,10 @@ import { Spinner } from "@/components/ui/spinner";
 
 export default function Notes() {
 
-  const { user, isLoggingOut, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && isLoading) {
     return null;
   }
 
@@ -21,7 +21,7 @@ export default function Notes() {
 
   return (
     <>
-    {isLoggingOut || user == null ? (
+    {isLoading ? (
        <div className=" w-full flex items-center justify-center mt-30">
         <Spinner className="size-24 text-blue" />
       </div>
