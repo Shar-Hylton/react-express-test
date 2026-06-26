@@ -21,9 +21,7 @@ export default function Home() {
         ease: "power2.inOut",
       },
     );
-    // gsap.fromTo(
-    //   "p",
-    // )
+   
   });
 
   const router = useRouter();
@@ -49,7 +47,7 @@ export default function Home() {
       <div className=" flex mt-8 h-10 ">
         <Button
           variant="none"
-          className=" btn btn-float my-4 mx-auto items-center justify-center"
+          className="btn-blue btn-float my-4 mx-auto items-center justify-center"
           onClick={handleClick}
         >
           

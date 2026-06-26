@@ -80,7 +80,7 @@ export default function Navbar() {
             <Button
               onClick={handleLogOut}
               disabled={isLoading}
-              className="text-sm/6 font-semibold btn p-5 rounded-md"
+              className="text-sm/6 font-semibold btn-blue p-5 rounded-md"
             >
               {isLoading ? "Signing out..." : "Log out"}
             </Button>

@@ -36,7 +36,7 @@ export default function EditNote() {
     handleSubmit,
     control,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<EditNoteForm>();
 
   const note = notes?.find((n) => n?._id === String(id));
@@ -147,7 +147,7 @@ export default function EditNote() {
               )}
             </div>
 
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !isDirty}>
               {isSubmitting ? "Updating..." : "Update Note"}
             </Button>
           </form>
