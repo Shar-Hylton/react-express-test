@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-body{
+body {
   min-height: 100vh;
 }
 
@@ -41,7 +41,7 @@ body{
   } */
 }
 
-.btn-float{
+.btn-float {
   animation: float-up-down 5s infinite cubic-bezier(0.9, 0.01, 0.3, 0.99);
 }
 
@@ -62,7 +62,6 @@ body{
 
 /* animation ends */
 
-
 /* Card Animation */
 .perspective {
   perspective: 1200px;
@@ -79,7 +78,6 @@ body{
 .card-back {
   transform: rotateY(180deg);
 }
-
 
 /* End Card Animation */
 .custom-scrollbar::-webkit-scrollbar {
@@ -222,27 +220,29 @@ body{
   }
 }
 
-@layer utilities{
+@layer utilities {
   .text-transition {
-    
-    
-    .text-p{
-      @apply  text-lg text-amber-200 text-justify;
+    .text-p {
+      @apply text-lg text-amber-200 text-justify;
     }
-    
   }
 
-  .btn {
-    @apply text-zinc-100 p-5 rounded-2xl bg-blue-500 outline-1 border-2 border-zinc-100 cursor-pointer;
+  .btn-blue {
+    @apply text-zinc-100 p-5 rounded-2xl bg-blue-500 outline-1 border-2 border-zinc-100 cursor-pointer hover:bg-zinc-600;
+  }
+  .btn-red {
+    @apply text-zinc-100 p-5 rounded-2xl bg-red-500 outline-1 border-2 border-zinc-100 cursor-pointer hover:bg-zinc-600;
+  }
+   .dialog-btn {
+    @apply rounded-full border border-white/40 bg-white/20 backdrop-blur-xl shadow-xl text-slate-900 hover:bg-white/35 hover:scale-105 transition-all;
+
+    /* dark mode variant */
+    @apply dark:border-slate-700/40 dark:bg-slate-800/40 dark:text-slate-100 dark:hover:bg-slate-700/50;
   }
 
-  .card-animation{
+  .card-animation {
     @apply transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl;
   }
-}
 
-/* @layer components{
-  .card-transition{
-    @apply ;
-  }
-} */
+
+}

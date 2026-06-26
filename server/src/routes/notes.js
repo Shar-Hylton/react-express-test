@@ -87,8 +87,17 @@ router.put(
     if (!note) return res.status(404).json({ errors: [{ msg: "Note not found" }] });
 
     const {title, content} = req.body;
-
+ 
     try{
+      const isUnchanged =
+        note.title === title && note.content === content;
+
+      if (isUnchanged) {
+        return res.status(200).json({
+          updatedNote: note,
+          message: "No changes detected",
+        });
+      }
         const updatedNote = await Note.findByIdAndUpdate(req.params.id, 
             {title, content},
             {new: true}

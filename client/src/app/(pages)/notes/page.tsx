@@ -29,7 +29,7 @@ export default function Notes() {
 
     <div className="mt-10 mx-auto">
       <div className="flex justify-center mb-10">
-        <Button className="cursor-pointer" onClick={handleAdd}>
+        <Button className="btn-blue" onClick={handleAdd}>
           Create Note
         </Button>
       </div>

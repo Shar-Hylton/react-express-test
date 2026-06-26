@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { Info, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "./ui/button";
 
 type NoteCardProps = {
@@ -45,9 +45,9 @@ export default function NoteCard({
 }: NoteCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const wordCount = content.trim().split(/\s+/).length;
-
-  const isLongNote = content.length > 500;
+  const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
+  const charCount = content.trim().length;
+  const isLongNote = charCount > 500;
 
   const previewContent = isLongNote
     ? content.split(/\s+/).slice(0, 500).join(" ")
@@ -58,6 +58,9 @@ export default function NoteCard({
       whileHover={{
         scale: 1.02,
         y: -5,
+      }}
+      whileTap={{
+        scale: 0.98,
       }}
       transition={{
         duration: 0.2,
@@ -73,153 +76,211 @@ export default function NoteCard({
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="group relative flex flex-col min-h-105 overflow-hidden cursor-pointer">
+            <Card
+              className="
+                group
+                flex
+                flex-col
+                h-120
+                overflow-hidden
+                cursor-pointer
+                transition-shadow
+                hover:shadow-xl
+              "
+            >
+              <div
+                className="flex-1 flex flex-col cursor-pointer"
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
 
-              {/* INFO BUTTON */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="
-                  absolute
-                  right-3
-                  top-3
-                  z-20
-                  opacity-0
-                  transition-opacity
-                  duration-200
-                  group-hover:opacity-100
-                  cursor-pointer
-                  rounded-full
-                  bg-white/70
-                  backdrop-blur-sm
-                "
-                onClick={() => setIsFlipped(true)}
+                  if (
+                    target.closest("button") ||
+                    target.closest("[role='dialog']")
+                  ) {
+                    return;
+                  }
+
+                  setIsFlipped(true);
+                }}
               >
-                <Info size={18} />
-              </Button>
+                {/* HEADER */}
+                <CardHeader className="underline text-center shrink-0">
+                  <CardTitle className="text-xl font-bold">{title}</CardTitle>
+                </CardHeader>
 
-              <CardHeader className="underline text-center">
-                <CardTitle className="text-xl font-bold pr-8">
-                  {title}
-                </CardTitle>
-              </CardHeader>
-
-              <CardContent className="grow relative">
-                <p className="text-sm text-gray-700 whitespace-pre-wrap text-justify">
-                  {previewContent}
-                </p>
-
-                {isLongNote && (
-                  <>
-                    <div
-                      className="
-                        absolute
-                        bottom-0
-                        left-0
-                        right-0
-                        h-44
-                        bg-linear-to-t
-                        from-white
-                        via-white
-                        via-70%
-                        to-transparent
+                {/* CONTENT */}
+                <CardContent
+                  className="
+                    flex-1
+                    relative
+                    overflow-hidden
+                    min-h-0
+                    "
+                >
+                  <div
+                    className="
+                      relative
+                      h-full
+                      overflow-hidden
                       "
-                    />
-
-                    <div
+                  >
+                    <p
                       className="
-                        absolute
-                        bottom-6
-                        left-1/2
-                        -translate-x-1/2
-                        z-20
+                       text-sm
+                       text-gray-700
+                       whitespace-pre-wrap
+                       text-justify
+                       overflow-hidden
                       "
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 14,
+                        WebkitBoxOrient: "vertical",
+                      }}
                     >
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            size="sm"
-                            className="
-                              cursor-pointer
-                              border
-                              border-white/40
-                              bg-white/30
-                              backdrop-blur-md
-                              text-slate-900
-                              shadow-lg
-                              hover:bg-white/50
-                              transition-all
-                            "
-                          >
-                            Read More
-                          </Button>
-                        </DialogTrigger>
+                      {previewContent}
+                    </p>
 
-                        <DialogContent
+                    {isLongNote && (
+                      <>
+                        <div
                           className="
-                            max-w-4xl
-                            max-h-[85vh]
-                            overflow-y-auto
-                            custom-scrollbar
+                           absolute
+                           bottom-0
+                           left-0
+                           right-0
+                           h-24
+                           bg-linear-to-t
+                           from-white
+                           via-white/90
+                           to-transparent
+                           pointer-events-none
+                          "
+                        />
+
+                        <div
+                          className="
+                           absolute
+                           bottom-4
+                           left-1/2
+                           -translate-x-1/2
+                           z-20
+                           opacity-0
+                           group-hover:opacity-100
+                           transition-opacity
+                           duration-200
                           "
                         >
-                          <motion.div
-                            initial={{
-                              opacity: 0,
-                              scale: 0.7,
-                              y: 120,
-                            }}
-                            animate={{
-                              opacity: 1,
-                              scale: 1,
-                              y: 0,
-                            }}
-                            transition={{
-                              duration: 0.3,
-                            }}
-                          >
-                            <DialogHeader>
-                              <DialogTitle>
-                                {title}
-                              </DialogTitle>
-                            </DialogHeader>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                onClick={(e) => e.stopPropagation()}
+                                className="
+                                 cursor-pointer
+                                 border
+                                 border-white/40
+                                 bg-white/30
+                                 backdrop-blur-md
+                                 text-slate-900
+                                 shadow-lg
+                                 hover:bg-white/50
+                                 transition-all
+                                 rounded-full
+                                 "
+                              >
+                                Read Full Note
+                              </Button>
+                            </DialogTrigger>
 
-                            <div className="mt-4">
-                              <p className="whitespace-pre-wrap leading-7 text-justify">
-                                {content}
-                              </p>
-                            </div>
-                          </motion.div>
-                        </DialogContent>
-                      </Dialog>
+                            <DialogContent
+                              className="
+    w-sm
+    sm:max-w-[80vw]
+    max-h-[80vh]
+    overflow-y-auto
+    custom-scrollbar
+    p-0
+    border-white/20
+    shadow-2xl
+  "
+                            >
+                              <motion.div
+                                initial={{
+                                  opacity: 0,
+                                  scale: 0.68,
+                                  y: 120,
+                                  rotateX: 8,
+                                  filter: "blur(10px)",
+                                }}
+                                animate={{
+                                  opacity: 1,
+                                  scale: 1,
+                                  y: 0,
+                                  rotateX: 0,
+                                  filter: "blur(0px)",
+                                }}
+                                transition={{
+                                  type: "spring",
+                                  stiffness: 170,
+                                  damping: 22,
+                                  mass: 0.9,
+                                }}
+                                className="p-6"
+                              >
+                                <DialogHeader>
+                                  <DialogTitle>{title}</DialogTitle>
+                                </DialogHeader>
+
+                                <div className="mt-4">
+                                  <p className="whitespace-pre-wrap leading-7 text-justify">
+                                    {content}
+                                  </p>
+                                </div>
+                              </motion.div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+
+                {/* CARD FOOTER */}
+                <div className="relative bottom-[-30] mt-auto border-t px-6 py-3 h-30 bg-gray-200">
+                  <CardDescription className="capitalize">
+                    Author: {user?.username || "Unknown"}
+                  </CardDescription>
+
+                  {isOwner && (
+                    <div className="flex pt-4 gap-4 pb-4 ">
+                      <Button
+                        variant="none"
+                        size="sm"
+                        className="btn-blue"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(id);
+                        }}
+                      >
+                        Edit
+                      </Button>
+
+                      <Button
+                        variant="none"
+                        size="sm"
+                        className="btn-red"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(id);
+                        }}
+                      >
+                        Delete
+                      </Button>
                     </div>
-                  </>
-                )}
-              </CardContent>
-
-              <CardDescription className="px-6 pb-4 capitalize">
-                Author: {user?.username || "Unknown"}
-              </CardDescription>
-
-              {isOwner && (
-                <div className="mt-auto flex gap-2 px-6 pb-6">
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => onEdit(id)}
-                  >
-                    Edit
-                  </Button>
-
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => onDelete(id)}
-                  >
-                    Delete
-                  </Button>
+                  )}
                 </div>
-              )}
+              </div>
             </Card>
           </motion.div>
         ) : (
@@ -241,8 +302,16 @@ export default function NoteCard({
               duration: 0.3,
             }}
           >
-            <Card className="relative flex flex-col min-h-105">
-
+            <Card
+              className="
+                relative
+                flex
+                flex-col
+                h-120
+                cursor-pointer
+              "
+              onClick={() => setIsFlipped(false)}
+            >
               <Button
                 variant="ghost"
                 size="icon"
@@ -253,7 +322,10 @@ export default function NoteCard({
                   z-20
                   cursor-pointer
                 "
-                onClick={() => setIsFlipped(false)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFlipped(false);
+                }}
               >
                 <X size={18} />
               </Button>
@@ -265,7 +337,6 @@ export default function NoteCard({
               </CardHeader>
 
               <CardContent className="space-y-4 text-sm">
-
                 <div>
                   <strong>Author</strong>
                   <p>{user?.username || "Unknown"}</p>
@@ -303,7 +374,6 @@ export default function NoteCard({
                       : "Unknown"}
                   </p>
                 </div>
-
               </CardContent>
             </Card>
           </motion.div>
