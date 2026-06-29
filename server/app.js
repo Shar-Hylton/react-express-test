@@ -10,17 +10,27 @@ const connectDB = require("./src/config/db");
 
 const authRoutes = require("./src/routes/auth");
 const noteRoutes = require("./src/routes/notes");
-
+const cors = require("cors");
 // Databse Connection
 
 connectDB();
 
-// Middlewares
 
-const cors = require("cors");
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.CLIENT_URL
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: function(origin, cb){
+      if(!origin || allowedOrigins.includes(origin)){
+      cb(null, true);
+    } else{
+      cb(new Error("Not allowed by CORS"));
+    }
+  },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
@@ -41,11 +51,11 @@ app.use(
       ttl: 2 * 24 * 60 * 60, // ttl: time to live
     }),
     cookie: {
-      secure: false, // For Testing Only and using HTTP in Development. Must change to true when sent over HTTPS
+      secure: process.env.NODE_ENV === "production", //Set To False For Testing Only and using HTTP in Development. Must change to true when sent over HTTPS
       httpOnly: true, // Prevents JavaScript from accessing the cookie (reduces XSS risk).
       maxAge: 24 * 60 * 60 * 1000, // 1 day
-      sameSite: "lax",
-      secure: false,
+      sameSite: "none", //"lax",
+      maxAge: 24 * 60 * 60 * 1000,
     },
   }),
 );
@@ -57,6 +67,6 @@ app.use("/notes", noteRoutes);
 //   res.send("OK");
 // });
 
-app.listen(PORT, () =>
-  console.log(`Server is running on http://localhost:${PORT}/`),
-);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is running on http://localhost:${PORT}/`);
+});
