@@ -20,16 +20,21 @@ connectDB();
 const allowedOrigins = [
   "http://localhost:3000",
   process.env.CLIENT_URL
-];
+].filter(Boolean);
 
 app.use(
   cors({
     origin: function(origin, cb){
-      if(!origin || allowedOrigins.includes(origin)){
-      cb(null, true);
-    } else{
-      cb(new Error("Not allowed by CORS"));
+      if(!origin ){
+      return cb(null, true);
+    } 
+    const isAllowed = allowedOrigins.some((o)=>
+      origin.startsWith(o)
+    );
+    if(isAllowed){
+      return cb(null, true);
     }
+     return cb(new Error("Not allowed by CORS"));
   },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
