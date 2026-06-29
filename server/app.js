@@ -31,6 +31,10 @@ app.use(
     const isAllowed = allowedOrigins.some((o)=>
       origin.startsWith(o)
     );
+    
+    console.log("Origin:", origin);
+    console.log("Allowed:", allowedOrigins);
+
     if(isAllowed){
       return cb(null, true);
     }
