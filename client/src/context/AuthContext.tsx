@@ -12,6 +12,7 @@ import {
 import { usePathname } from "next/navigation";
 import type { User } from "@/types/dataTypes";
 
+
 type UserData = {
   email: string;
   password: string;
@@ -61,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const res = await fetch("https://react-express-test.vercel.app/auth/me", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`, {
           credentials: "include",
           signal: controller.signal,
         });
@@ -105,7 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const userRegistration = async (data: RegisteredUser) => {
     try {
-      const response = await fetch("https://react-express-test.vercel.app/auth/register", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -147,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const userLogin = async (data: UserData) => {
     try {
       console.log("Submitting login request");
-      const response = await fetch("https://react-express-test.vercel.app/auth/login", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,7 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      const response = await fetch("https://react-express-test.vercel.app/auth/logout", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
