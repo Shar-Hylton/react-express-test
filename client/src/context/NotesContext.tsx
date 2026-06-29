@@ -48,7 +48,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   const createNote = async (data: { title: string; content: string }) => {
    
     try {
-      const response = await fetch("http://localhost:8000/notes/add", {
+      const response = await fetch("https://react-express-test.vercel.app/notes/add", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -95,7 +95,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   ) => {
    
     try {
-      const response = await fetch(`http://localhost:8000/notes/edit/${id}`, {
+      const response = await fetch(`https://react-express-test.vercel.app/notes/edit/${id}`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -138,7 +138,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   // GET
   useEffect(() => {
     const getNotes = async () => {
-      const url: string = "http://localhost:8000/notes";
+      const url: string = "https://react-express-test.vercel.app/notes";
 
       try {
         const cachedNotes = getNotesFromCache();
@@ -177,7 +177,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   const deleteNote = async (id: string) => {
 
     try {
-      const response = await fetch(`http://localhost:8000/notes/delete/${id}`, {
+      const response = await fetch(`https://react-express-test.vercel.app/notes/delete/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

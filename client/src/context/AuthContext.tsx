@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const res = await fetch("http://localhost:8000/auth/me", {
+        const res = await fetch("https://react-express-test.vercel.app/auth/me", {
           credentials: "include",
           signal: controller.signal,
         });
@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const userRegistration = async (data: RegisteredUser) => {
     try {
-      const response = await fetch("http://localhost:8000/auth/register", {
+      const response = await fetch("https://react-express-test.vercel.app/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -147,7 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const userLogin = async (data: UserData) => {
     try {
       console.log("Submitting login request");
-      const response = await fetch("http://localhost:8000/auth/login", {
+      const response = await fetch("https://react-express-test.vercel.app/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,7 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      const response = await fetch("http://localhost:8000/auth/logout", {
+      const response = await fetch("https://react-express-test.vercel.app/auth/logout", {
         method: "POST",
         credentials: "include",
       });
