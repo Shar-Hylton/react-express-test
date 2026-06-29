@@ -1,4 +1,4 @@
-import { validPasswordMsg } from "@/constants/index.js";
+import { validPasswordMsg } from "@/constants";
 
 export function validateEmail(email: string): boolean {
     if (!email.trim()) return false;

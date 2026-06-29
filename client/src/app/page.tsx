@@ -1,5 +1,6 @@
 'use client'
 
+// import Footer from '@/components/Footer';
 import Main from '@/components/Main';
 import Navbar from '@/components/Navbar';
 
@@ -9,7 +10,7 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 font-sans dark:bg-black">
       <Navbar />
       <Main />
-      
+      {/* <Footer /> */}
     </div>
   );
 }

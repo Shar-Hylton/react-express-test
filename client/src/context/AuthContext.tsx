@@ -10,13 +10,7 @@ import {
   useRef,
 } from "react";
 import { usePathname } from "next/navigation";
-
-type User = {
-  _id: string;
-  username: string;
-  email: string;
-  role: "user" | "admin";
-};
+import type { User } from "@/types/dataTypes";
 
 type UserData = {
   email: string;

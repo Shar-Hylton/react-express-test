@@ -7,20 +7,7 @@ import {
   useEffect,
 } from "react";
 
-type User = {
-  _id: string; 
-  username: string; 
-  email: string 
-}
-
-type Note = {
-  _id: string;
-  title: string;
-  content: string;
-  user?: User;
-  createdAt: string;
-  updatedAt: string;
-};
+import type { Note } from "@/types/dataTypes";
 
 
 type NotesContextType = {

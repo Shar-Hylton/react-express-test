@@ -28,7 +28,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 bg-white border-b border-gray-400/30 w-full z-50">
+    <header className="fixed top-0 bg-white border-b border-gray-400/30 w-full z-20">
       <nav
         aria-label="Global"
         className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
