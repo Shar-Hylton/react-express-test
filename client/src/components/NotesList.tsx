@@ -1,17 +1,21 @@
 import NoteCard from "./NoteCard";
+import ExpandedNote from "./ExpandedNote";
 import { useNotes } from "../context/NotesContext";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Spinner } from "./ui/spinner";
 import { toast } from "react-toastify";
-import { useAuth } from "@/context/AuthContext";
 import { defaultNotes } from "@/constants";
 import { motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import { useState } from "react";
 
 export default function NotesList() {
   const { isLoading, notes, deleteNote } = useNotes();
   const { user, isAuthenticated } = useAuth();
   
   const notesToRender = isAuthenticated ? notes : defaultNotes;
+  const [expandedNote, setExpandedNote] = useState<(typeof notesToRender)[number] | null>(null);
 
   const router = useRouter();
 
@@ -39,6 +43,7 @@ export default function NotesList() {
   }
 
   return (
+    <>
     <div className="flex flex-wrap justify-center gap-8">
       {notesToRender.map((note, index) => {
         const currentUser = user?._id;
@@ -46,23 +51,23 @@ export default function NotesList() {
 
         return (
           <motion.div
-    key={note._id}
-    initial={{
-      opacity: 0,
-      y: 20
-    }}
-    whileInView={{
-      opacity: 1,
-      y: 0
-    }}
-    viewport={{
-      once: true
-    }}
-    transition={{
-      duration: 0.4,
-      delay: index * 0.1
-    }}
-  >
+           key={note._id}
+           initial={{
+           opacity: 0,
+           y: 20
+        }}
+           whileInView={{
+           opacity: 1,
+           y: 0
+        }}
+           viewport={{
+           once: true
+        }}
+           transition={{
+           duration: 0.4,
+           delay: index * 0.1
+        }}
+        >
           <NoteCard
             key={note?._id}
             id={note?._id}
@@ -74,10 +79,20 @@ export default function NotesList() {
             updatedAt={note.updatedAt}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            onExpand={()=> setExpandedNote(note)}
           />
           </motion.div>
         );
       })}
     </div>
+    <AnimatePresence>
+      {expandedNote && (
+        <ExpandedNote
+        note={expandedNote}
+        onClose={() => setExpandedNote(null)}
+        />
+      )}
+    </AnimatePresence>
+    </>
   );
 }

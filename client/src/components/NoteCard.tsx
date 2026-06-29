@@ -7,13 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "./ui/dialog";
 import { X } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -30,6 +30,7 @@ type NoteCardProps = {
   isOwner: boolean;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
+  onExpand: () => void;
 };
 
 export default function NoteCard({
@@ -42,6 +43,7 @@ export default function NoteCard({
   isOwner,
   onDelete,
   onEdit,
+  onExpand,
 }: NoteCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -70,6 +72,7 @@ export default function NoteCard({
       <AnimatePresence mode="wait">
         {!isFlipped ? (
           <motion.div
+            layoutId={`note-${id}`}
             key="front"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -171,11 +174,13 @@ export default function NoteCard({
                            duration-200
                           "
                         >
-                          <Dialog>
-                            <DialogTrigger asChild>
                               <Button
                                 size="sm"
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onExpand();
+                                }
+                              }
                                 className="
                                  cursor-pointer
                                  border
@@ -191,55 +196,7 @@ export default function NoteCard({
                               >
                                 Read Full Note
                               </Button>
-                            </DialogTrigger>
-
-                            <DialogContent
-                              className="
-    w-sm
-    sm:max-w-[80vw]
-    max-h-[80vh]
-    overflow-y-auto
-    custom-scrollbar
-    p-0
-    border-white/20
-    shadow-2xl
-  "
-                            >
-                              <motion.div
-                                initial={{
-                                  opacity: 0,
-                                  scale: 0.68,
-                                  y: 120,
-                                  rotateX: 8,
-                                  filter: "blur(10px)",
-                                }}
-                                animate={{
-                                  opacity: 1,
-                                  scale: 1,
-                                  y: 0,
-                                  rotateX: 0,
-                                  filter: "blur(0px)",
-                                }}
-                                transition={{
-                                  type: "spring",
-                                  stiffness: 170,
-                                  damping: 22,
-                                  mass: 0.9,
-                                }}
-                                className="p-6"
-                              >
-                                <DialogHeader>
-                                  <DialogTitle>{title}</DialogTitle>
-                                </DialogHeader>
-
-                                <div className="mt-4">
-                                  <p className="whitespace-pre-wrap leading-7 text-justify">
-                                    {content}
-                                  </p>
-                                </div>
-                              </motion.div>
-                            </DialogContent>
-                          </Dialog>
+                          
                         </div>
                       </>
                     )}

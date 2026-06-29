@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
 export default function PagesLayout({
@@ -13,6 +14,7 @@ export default function PagesLayout({
       <main className="flex pt-30">
         {children}
       </main>
+      <Footer />
     </>
   );
 }

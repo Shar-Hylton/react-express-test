@@ -1,3 +1,5 @@
+import { Note } from "@/types/dataTypes";
+
 const validPasswordMsg = [
   "Must be atleast 8 characters",
   "Must contain atleast 1 uppercase letter",
@@ -9,7 +11,7 @@ const intro = [
   "In this project we will be building our first interactive UI with UX, by creating Authentication and Authorization for users and Notes. As a user you will have your own notes. Each notes belongs to diffferent users across the globe, and only that user will have, edit or delete rights / permission to the contents of the note, besides Admin. However, all users have permission to view a note.",
 ];
 
-const defaultNotes = [
+const defaultNotes: Note[] = [
   {
     _id: "1",
     title: "This Project was Created using NextJs + Express",
@@ -19,6 +21,7 @@ const defaultNotes = [
       _id: "demo-user-1",
       username: "Demo",
       email: "demo@example.com",
+      role: "admin",
     },
     createdAt: "2026-01-01",
     updatedAt: "2026-01-01"
@@ -32,6 +35,7 @@ const defaultNotes = [
       _id: "demo-user-2",
       username: "Demo",
       email: "demo@example.com",
+      role: "admin",
     },
     createdAt: "2026-01-01",
     updatedAt: "2026-01-01"
@@ -45,6 +49,7 @@ const defaultNotes = [
       _id: "demo-user-3",
       username: "Demo",
       email: "demo@example.com",
+      role: "admin",
     },
     createdAt: "2026-01-01",
     updatedAt: "2026-01-01"
@@ -58,6 +63,7 @@ const defaultNotes = [
       _id: "demo-user-4",
       username: "Demo",
       email: "demo@example.com",
+      role: "admin",
     },
     createdAt: "2026-01-01",
     updatedAt: "2026-01-01"
@@ -71,6 +77,7 @@ const defaultNotes = [
       _id: "demo-user-5",
       username: "Demo",
       email: "demo@example.com",
+      role: "admin",
     },
     createdAt: "2026-01-01",
     updatedAt: "2026-01-01"
@@ -84,6 +91,7 @@ const defaultNotes = [
       _id: "demo-user-6",
       username: "Demo",
       email: "demo@example.com",
+      role: "admin",
     },
     createdAt: "2026-01-01",
     updatedAt: "2026-01-01"
