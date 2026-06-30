@@ -12,7 +12,7 @@ import { Button } from "../../../../../components/ui/button";
 import { useForm, useWatch } from "react-hook-form";
 import { useNotes } from "../../../../../context/NotesContext";
 import { redirect, useParams, useRouter } from "next/navigation";
-import { useEffect} from "react";
+import { useEffect } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
@@ -27,7 +27,13 @@ export default function EditNote() {
   const router = useRouter();
   const { notes, isLoading, updateNote } = useNotes();
 
-  const {user} = useAuth();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace("/auth/login");
+    }
+  }, [user, router, isLoading]);
 
   if (!user) redirect("/auth/login");
 
@@ -68,7 +74,6 @@ export default function EditNote() {
     return (
       <h1 className="text-center text-4xl mx-auto mt-10">Note not found</h1>
     );
-
 
   const onSubmit = async (data: EditNoteForm) => {
     const result = await updateNote(id as string, data);
