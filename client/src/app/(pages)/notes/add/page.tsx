@@ -1,5 +1,5 @@
 "use client";
-
+import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useNotes } from "@/context/NotesContext";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { useAuth } from "@/context/AuthContext";
 
 type NoteFormData = {
   title: string;
@@ -15,6 +16,16 @@ type NoteFormData = {
 };
 
 export default function AddNote() {
+
+const { user, isLoading } = useAuth();
+const router = useRouter();
+
+useEffect(() => {
+  if (!isLoading && !user) {
+    router.replace("/auth/login");
+  }
+}, [user, router, isLoading]);
+
   const {createNote } = useNotes();
   const {
     register,
@@ -23,7 +34,6 @@ export default function AddNote() {
     formState: { errors, isSubmitting },
   } = useForm<NoteFormData>();
 
-  const router = useRouter();
   const titleValue = useWatch({control, name: "title"})?.length || 0;
   const contentValue = useWatch({control, name: "content"})?.length || 0;
 
