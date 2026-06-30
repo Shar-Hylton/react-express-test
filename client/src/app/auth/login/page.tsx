@@ -81,7 +81,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 px-4">
+    <div className="flex flex-col min-h-screen items-center justify-center bg-linear-to-br from-zinc-950 via-zinc-900 to-zinc-950 px-4">
       
       {error && (
         <ul className="text-red-500 mt-8 mb-8 list-disc">
