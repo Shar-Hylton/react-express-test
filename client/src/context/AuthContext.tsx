@@ -9,9 +9,8 @@ import {
   useCallback,
   useRef,
 } from "react";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import type { User } from "@/types/dataTypes";
-
 
 type UserData = {
   email: string;
@@ -44,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const refreshController = useRef<AbortController | null>(null);
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   // const router = useRouter();
 
@@ -62,10 +61,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`, {
-          credentials: "include",
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`,
+          {
+            credentials: "include",
+            signal: controller.signal,
+          },
+        );
 
         if (!res.ok) {
           setUser(null);
@@ -92,11 +94,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshAuth();
   }, [refreshAuth]);
 
-  useEffect(() => {
-    if (!isLoading && user) {
-      refreshAuth({ background: true });
-    }
-  }, [pathname, isLoading, user, refreshAuth]);
+  // useEffect(() => {
+  //   if (!isLoading && user) {
+  //     refreshAuth({ background: true });
+  //   }
+  // }, [pathname, isLoading, user, refreshAuth]);
 
   useEffect(() => {
     return () => {
@@ -106,14 +108,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const userRegistration = async (data: RegisteredUser) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(data),
         },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
+      );
       const resData = await response.json();
 
       if (!response.ok) {
@@ -148,14 +153,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const userLogin = async (data: UserData) => {
     try {
       console.log("Submitting login request");
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(data),
         },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
+      );
       const resData = await response.json();
 
       console.log("Response received:", response.status);
@@ -169,7 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
 
-      login(resData.user);
+      await refreshAuth();
 
       return {
         success: true,
@@ -188,10 +196,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
       const resData = await response.json();
 
       if (!response.ok) {
@@ -202,7 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       sessionStorage.removeItem("notes_cache");
       setUser(null);
-    
+
       return {
         success: true,
         message: resData?.msg || "Successfully logged out",
