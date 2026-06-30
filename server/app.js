@@ -19,6 +19,8 @@ const allowedOrigins = ["http://localhost:3000", process.env.CLIENT_URL].filter(
   Boolean,
 );
 
+app.set("trust proxy", 1);
+
 app.use(
   cors({
     origin: function (origin, cb) {
@@ -55,7 +57,7 @@ app.use(
       ttl: 2 * 24 * 60 * 60, // ttl: time to live
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production", //Set To False For Testing Only and using HTTP in Development. Must change to true when sent over HTTPS
+      secure: true, //Set To False For Testing Only and using HTTP in Development. Must change to true when sent over HTTPS
       httpOnly: true, // Prevents JavaScript from accessing the cookie (reduces XSS risk).
       maxAge: 24 * 60 * 60 * 1000, // 1 day
       sameSite: "none", //"lax",
