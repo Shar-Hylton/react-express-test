@@ -31,7 +31,7 @@ export default function Home() {
   };
   return (
     <main className="flex w-full max-w-3xl flex-col items-center justify-between bg-zinc-250 dark:bg-black ">
-      <h1 className=" text-7xl text-center py-16 text-zinc-100">
+      <h1 className=" lg:text-7xl sm:text-4xl text-center py-16  text-zinc-100">
         Welcome To My Notes Project
       </h1>
       <br />
@@ -44,7 +44,7 @@ export default function Home() {
 
       </div>
       
-      <div className=" flex mt-8 h-10 ">
+      <div className=" flex mt-8 h-10 sm:h-5 ">
         <Button
           variant="none"
           className="btn-blue btn-float my-4 mx-auto items-center justify-center"
