@@ -223,7 +223,7 @@ body {
 @layer utilities {
   .text-transition {
     .text-p {
-      @apply text-lg text-amber-200 text-justify;
+      @apply text-md lg:text-lg  text-amber-200 text-justify;
     }
   }
 

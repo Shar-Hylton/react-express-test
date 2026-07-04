@@ -77,7 +77,7 @@ export default function Login() {
     setForm({ email: "", password: "" });
     setIsLoading(false);
 
-    router.replace("/notes?login=success");
+    router.replace("/notes");
   };
 
   return (
