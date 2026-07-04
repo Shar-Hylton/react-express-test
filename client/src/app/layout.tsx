@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { NotesProvider } from "../context/NotesContext";
+
 import { AuthProvider } from "../context/AuthContext";
-// import { Toaster } from "@/components/ui/sonner";
-import {ToastContainer} from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "./globals.css";
+import Providers from "@/app/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,7 +19,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Your Notes App",
   description: "A Notes Application For All Users",
-
 };
 
 export default function RootLayout({
@@ -34,11 +33,13 @@ export default function RootLayout({
       >
         {" "}
         <AuthProvider>
-          <NotesProvider>
-            {children}
-            {/* <Toaster richColors position="bottom-right" /> */}
-            <ToastContainer aria-label={"notification"} className={"mt-20"}  />
-          </NotesProvider>
+          <Providers>
+            {/* <NotesProvider> */}
+              {children}
+              {/* <Toaster richColors position="bottom-right" /> */}
+              <ToastContainer aria-label={"notification"} className={"mt-20"} />
+            {/* </NotesProvider> */}
+          </Providers>
         </AuthProvider>
       </body>
     </html>

@@ -9,7 +9,7 @@ import {
   useCallback,
   useRef,
 } from "react";
-// import { usePathname } from "next/navigation";
+
 import type { User } from "@/types/dataTypes";
 
 type UserData = {

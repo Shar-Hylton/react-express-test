@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 
     return res.status(200).json({ notes });
   } catch (error) {
-    return res.status(500).json({ errors: [{msg: "Failed to fetch notes" }]});
+    return res.status(500).json({ errors: [{message: "Failed to fetch notes" }]});
   }
 });
 
@@ -57,7 +57,7 @@ router.post(
       console.log(error);
       return res
         .status(500)
-        .json({ errors: [{ msg: " Failed to add note" }], old: req.body });
+        .json({ errors: [{ message: " Failed to add note" }], old: req.body });
     }
   }
 );
@@ -84,7 +84,7 @@ router.put(
 
     const note = await Note.findById(req.params.id);
 
-    if (!note) return res.status(404).json({ errors: [{ msg: "Note not found" }] });
+    if (!note) return res.status(404).json({ errors: [{ message: "Note not found" }] });
 
     const {title, content} = req.body;
  
@@ -105,7 +105,7 @@ router.put(
         console.log("note updated: ", JSON.stringify(updatedNote))
         return res.status(200).json({updatedNote, message: "Note updated Successfully"});
     }catch(error){
-        return res.status(500).json({errors: [{msg: "Failed to update note"}]})
+        return res.status(500).json({errors: [{message: "Failed to update note"}]})
     }
   }
 );
@@ -113,7 +113,7 @@ router.put(
 router.delete('/delete/:id',ensureLogin, owner, async (req,res)=>{
     const note = await Note.findById(req.params.id)
 
-    if(!note) return res.status(404).json({errors: [{msg: "Note not found"}]});
+    if(!note) return res.status(404).json({errors: [{message: "Note not found"}]});
 
     try{
         await Note.findByIdAndDelete(req.params.id);
@@ -122,7 +122,7 @@ router.delete('/delete/:id',ensureLogin, owner, async (req,res)=>{
 
     }catch(error){
         console.log(error);
-        return res.status(500).json({errors: [{msg: "Failed to delete note"}]})
+        return res.status(500).json({errors: [{message: "Failed to delete note"}]})
     }
 })
 
