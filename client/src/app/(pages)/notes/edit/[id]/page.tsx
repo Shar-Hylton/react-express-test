@@ -10,12 +10,15 @@ import { Input } from "../../../../../components/ui/input";
 import { Textarea } from "../../../../../components/ui/textarea";
 import { Button } from "../../../../../components/ui/button";
 import { useForm, useWatch } from "react-hook-form";
-import { useNotes } from "../../../../../context/NotesContext";
+// import { useNotes } from "../../../../../context/NotesContext";
 import { redirect, useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
+import { useNoteMutations } from "@/Hooks/useNoteMutations";
+
+import { useNotesQuery } from "@/Hooks/useNotesQuery";
 
 type EditNoteForm = {
   title: string;
@@ -25,9 +28,11 @@ type EditNoteForm = {
 export default function EditNote() {
   const { id } = useParams();
   const router = useRouter();
-  const { notes, isLoading, updateNote } = useNotes();
+  // const { notes, isLoading, updateNote } = useNotes();
 
-  const { user } = useAuth();
+  const { updateMutation } = useNoteMutations();
+
+  const { isLoading, user } = useAuth();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -45,6 +50,7 @@ export default function EditNote() {
     formState: { errors, isSubmitting, isDirty },
   } = useForm<EditNoteForm>();
 
+  const { data: notes = [] } = useNotesQuery();
   const note = notes?.find((n) => n?._id === String(id));
 
   const titleValue = useWatch({ control, name: "title" })?.length || 0;
@@ -76,18 +82,31 @@ export default function EditNote() {
     );
 
   const onSubmit = async (data: EditNoteForm) => {
-    const result = await updateNote(id as string, data);
-    const success = result.success;
-    const msg = result.message;
-    if (!success) {
-      toast.error(msg);
-      return;
-    }
+    updateMutation.mutate(
+      { id: id as string, data },
+      {
+        onSuccess: (res) => {
+          toast.success(res.message);
+          router.replace("/notes"); 
+        },
+        onError: (err) => {
+          toast.error(err.message);
+        },
+      }
+    );
+  }
+  //   const result = await updateNote(id as string, data);
+  //   const success = result.success;
+  //   const msg = result.message;
+  //   if (!success) {
+  //     toast.error(msg);
+  //     return;
+  //   }
 
-    toast.success(msg);
+  //   toast.success(msg);
 
-    router.replace("/notes");
-  };
+    
+  // };
 
   return (
     <>

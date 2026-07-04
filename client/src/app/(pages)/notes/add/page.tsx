@@ -5,10 +5,11 @@ import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useNotes } from "@/context/NotesContext";
+// import { useNotes } from "@/context/NotesContext";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
+import { useNoteMutations } from "@/Hooks/useNoteMutations";
 
 type NoteFormData = {
   title: string;
@@ -19,6 +20,7 @@ export default function AddNote() {
 
 const { user, isLoading } = useAuth();
 const router = useRouter();
+const { createMutation } = useNoteMutations();
 
 useEffect(() => {
   if (!isLoading && !user) {
@@ -26,7 +28,7 @@ useEffect(() => {
   }
 }, [user, router, isLoading]);
 
-  const {createNote } = useNotes();
+  // const {createNote } = useNotes();
   const {
     register,
     handleSubmit,
@@ -38,18 +40,18 @@ useEffect(() => {
   const contentValue = useWatch({control, name: "content"})?.length || 0;
 
   const onSubmit = async (data: NoteFormData) => {
-    const result = await createNote(data);
-    if(result.success){
-      toast.success(result.message);
-       router.replace("/notes");
-     }else{
-      toast.error(result.message);
-      return;
-     }
+    createMutation.mutate(data, {
+      onSuccess: (res)=> {
+        toast.success(res.message)
+        router.replace("/notes");
+      },
+      onError: (err) => {
+        toast.error(err.message);
+      },
+    });
    
   };
 
-  
     return (
     <>
       <Card className="max-w-xl w-md mx-auto mt-20 ">

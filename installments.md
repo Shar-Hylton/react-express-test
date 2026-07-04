@@ -31,3 +31,8 @@ Import chevron for back redirect or FaUser, FaSignInAlt, FaSignOutAlt, FaBuildin
 * GSAP useGSAP
 ==============
 - npm i gsap @gsap/react
+
+* TanStack/react-query
+=======================
+
+npm i @tanstack/react-query
