@@ -79,6 +79,9 @@ export default function NoteCard({
                 flex
                 flex-col
                 h-120
+                mx-8
+                sm:mx-auto
+                mobile-friendly
                 overflow-hidden
                 cursor-pointer
                 transition-shadow
@@ -155,42 +158,86 @@ export default function NoteCard({
                           "
                         />
 
+                        {/* Mobile / Tablet */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 24 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, amount: 0.3 }}
+                          transition={{
+                            duration: 0.7,
+                            ease: [0.16, 1, 0.3, 1],
+                          }}
+                          className="
+        absolute
+        bottom-4
+        left-1/2
+        -translate-x-1/2
+        z-20
+
+        md:hidden
+      "
+                        >
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onExpand();
+                            }}
+                            className="
+          cursor-pointer
+          border
+          border-white/40
+          bg-white/30
+          backdrop-blur-md
+          text-slate-900
+          shadow-lg
+          hover:bg-white/50
+          transition-all
+          rounded-full
+        "
+                          >
+                            Read Full Note
+                          </Button>
+                        </motion.div>
+
+                        {/* DESKTOP (hover only) */}
                         <div
                           className="
-                           absolute
-                           bottom-4
-                           left-1/2
-                           -translate-x-1/2
-                           z-20
-                           opacity-0
-                           group-hover:opacity-100
-                           transition-opacity
-                           duration-200
-                          "
+        hidden
+        md:flex
+        absolute
+        bottom-4
+        left-1/2
+        -translate-x-1/2
+        z-20
+
+        opacity-0
+        group-hover:opacity-100
+        transition-opacity
+        duration-200
+      "
                         >
-                              <Button
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onExpand();
-                                }
-                              }
-                                className="
-                                 cursor-pointer
-                                 border
-                                 border-white/40
-                                 bg-white/30
-                                 backdrop-blur-md
-                                 text-slate-900
-                                 shadow-lg
-                                 hover:bg-white/50
-                                 transition-all
-                                 rounded-full
-                                 "
-                              >
-                                Read Full Note
-                              </Button>
-                          
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onExpand();
+                            }}
+                            className="
+          cursor-pointer
+          border
+          border-white/40
+          bg-white/30
+          backdrop-blur-md
+          text-slate-900
+          shadow-lg
+          hover:bg-white/50
+          transition-all
+          rounded-full
+        "
+                          >
+                            Read Full Note
+                          </Button>
                         </div>
                       </>
                     )}

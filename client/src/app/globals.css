@@ -244,5 +244,26 @@ body {
     @apply transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl;
   }
 
+.mobile-friendly{
+  @apply leading-relaxed;
+  
+  & h1{
+    @apply text-3xl md:text-6xl;
+  }
 
+  & button{
+    @apply py-4 md:py-5 mb-4;
+  }
+
+  p {
+    @apply text-pretty hyphens-auto;
+  }
+}
+
+}
+main.mobile-friendly div {
+  @apply mx-auto px-16 max-w-7xl;
+  & p{
+    @apply text-sm sm:text-base;
+  }
 }

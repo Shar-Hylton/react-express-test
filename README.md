@@ -71,3 +71,5 @@ In this practice project, I will be creating an Express Server with secured endp
 6. Another key thing that is important although may seem small, is my understanding in file management and how to create separate components and render them, allowing responsiblilites to be delegated accordingly. This makes coding cleaner and modular.
 
 7. One of the most useful things I have learnt about styling, it is the art of creating reusable style codes. This makes it possible to keep your theme styles and fonts one place, where the code can be updated once and affect all the components at once, this is a real beauty especially using tailwindcss.
+
+8. Effects that requires hover are only workable on desktop, but smaller devices require different ux design. If a key functionality is only accessible by hover, then the feature is dysfunctional on smaller devices.

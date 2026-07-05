@@ -48,7 +48,7 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
         onClick={onClose}
       />
 
-      <div className="fixed inset-0 z-40 flex items-center justify-center p-8 pointer-events-none">
+      <div className="mobile-friendly fixed inset-0 z-40  flex items-center justify-center p-8 pointer-events-none">
         <motion.div
           layoutId={`note-${note._id}`}
            className="rounded-3xl overflow-hidden pointer-events-auto"
@@ -80,7 +80,9 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
             className="
             relative
              w-225
-             max-w-[40vw]
+             max-w-[70vw]
+             sm:max-w-[50vw]
+             md:max-w-[40vw]
              max-h-[70vh]
              flex
              flex-col
@@ -96,12 +98,12 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
               size="icon"
               className="
               absolute
-              top-4
-              right-4
-              md:top-2
-              md:right-2
+              top-2
+              right-2
+              sm:top-1
               sm:right-1
-              sm:top-2
+              md:top-3
+              md:right-3
               z-10
               rounded-full
               cursor-pointer
