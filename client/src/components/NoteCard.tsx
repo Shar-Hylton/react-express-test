@@ -168,14 +168,13 @@ export default function NoteCard({
                             ease: [0.16, 1, 0.3, 1],
                           }}
                           className="
-        absolute
-        bottom-4
-        left-1/2
-        -translate-x-1/2
-        z-20
-
-        md:hidden
-      "
+                           absolute
+                           bottom-4
+                           left-1/2
+                           -translate-x-1/2
+                           z-20
+                           lg:hidden
+                          "
                         >
                           <Button
                             size="sm"
@@ -184,17 +183,17 @@ export default function NoteCard({
                               onExpand();
                             }}
                             className="
-          cursor-pointer
-          border
-          border-white/40
-          bg-white/30
-          backdrop-blur-md
-          text-slate-900
-          shadow-lg
-          hover:bg-white/50
-          transition-all
-          rounded-full
-        "
+                             cursor-pointer
+                             border
+                             border-white/40
+                             bg-white/30
+                             backdrop-blur-md
+                             text-slate-900
+                             shadow-lg
+                             hover:bg-white/50
+                             transition-all
+                             rounded-full
+                             "
                           >
                             Read Full Note
                           </Button>
@@ -203,19 +202,18 @@ export default function NoteCard({
                         {/* DESKTOP (hover only) */}
                         <div
                           className="
-        hidden
-        md:flex
-        absolute
-        bottom-4
-        left-1/2
-        -translate-x-1/2
-        z-20
-
-        opacity-0
-        group-hover:opacity-100
-        transition-opacity
-        duration-200
-      "
+                           hidden
+                           md:flex
+                           absolute
+                           bottom-4
+                           left-1/2
+                           -translate-x-1/2
+                           z-20
+                           opacity-0
+                           group-hover:opacity-100
+                           transition-opacity
+                           duration-200
+                            "
                         >
                           <Button
                             size="sm"
@@ -224,17 +222,17 @@ export default function NoteCard({
                               onExpand();
                             }}
                             className="
-          cursor-pointer
-          border
-          border-white/40
-          bg-white/30
-          backdrop-blur-md
-          text-slate-900
-          shadow-lg
-          hover:bg-white/50
-          transition-all
-          rounded-full
-        "
+                             cursor-pointer
+                             border
+                             border-white/40
+                             bg-white/30
+                             backdrop-blur-md
+                             text-slate-900
+                             shadow-lg
+                             hover:bg-white/50
+                             transition-all
+                             rounded-full
+                            "
                           >
                             Read Full Note
                           </Button>
