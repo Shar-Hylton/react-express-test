@@ -205,15 +205,17 @@ export default function NoteCard({
                            hidden
                            md:flex
                            absolute
-                           bottom-4
+                           bottom-6
                            left-1/2
                            -translate-x-1/2
                            z-20
                            opacity-0
+                           translate-y-3
+                           transition-all
+                           duration-300
                            group-hover:opacity-100
-                           transition-opacity
-                           duration-200
-                            "
+                           group-hover:translate-y-0
+                           "
                         >
                           <Button
                             size="sm"

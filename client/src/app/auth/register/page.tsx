@@ -14,7 +14,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { toast } from "react-toastify";
 import {
   Card,
   CardContent,
@@ -103,9 +102,7 @@ export default function Register() {
       return;
     }
     setForm({ email: "", username: "", password: "", confirmPassword: "" });
-    toast.success("Register Successful");
-    // setIsLoading(true);
-    // userRegister?.({ ...form });
+    sessionStorage.setItem("toast", result.message);
     router.replace("/notes");
   };
 

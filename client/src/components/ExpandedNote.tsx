@@ -107,6 +107,7 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
               z-10
               rounded-full
               cursor-pointer
+              py-0!
             "
               onClick={onClose}
             >

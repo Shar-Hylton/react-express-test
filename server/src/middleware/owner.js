@@ -15,13 +15,13 @@ module.exports = async (req, res, next) => {
       return res.status(404).json({ error: "Note not found" });
     }
 
-    const isOwner = note.user.toString() === req.session.user._id;
+    const isOwner = note.user.toString() === req.user._id;
 
-    const isAdmin = req.session.user.role === "admin";
+    const isAdmin = req.user.role === "admin";
 
     // This part is authorization
     if (!isOwner && !isAdmin) {
-      req.session.error = "You are not authorized to perform this action";
+      // req.session.error = "You are not authorized to perform this action";
       return res.status(403).json({ error: "You are not authorized" });
     }
 

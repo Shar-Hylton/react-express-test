@@ -7,7 +7,7 @@ import {
   useState,
   ReactNode,
   useCallback,
-  useRef,
+  // useRef,
 } from "react";
 
 import type { User } from "@/types/dataTypes";
@@ -31,10 +31,11 @@ type AuthContextType = {
   userRegistration: (
     userData: RegisteredUser,
   ) => Promise<{ success: boolean; message: string }>;
-  login: (userData: User) => void;
+  // login: (userData: User) => void;
   userLogin: (data: UserData) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<{ success: boolean; message: string }>;
-  refreshAuth: (options?: { background?: boolean }) => Promise<void>;
+  // refreshAuth: (options?: { background?: boolean }) => Promise<void>;
+  refreshAuth: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,69 +43,97 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const refreshController = useRef<AbortController | null>(null);
-  // const pathname = usePathname();
+  // const refreshController = useRef<AbortController | null>(null);
 
-  // const router = useRouter();
+  // Changing from session to JWT
 
-  const refreshAuth = useCallback(
-    async (options?: { background?: boolean }) => {
-      if (refreshController.current) {
-        refreshController.current.abort();
-      }
+  const refreshAuth = useCallback(async () => {
+    setIsLoading(true);
 
-      const controller = new AbortController();
-      refreshController.current = controller;
+    try{
+      const token = localStorage.getItem("token");
 
-      if (!options?.background) {
-        setIsLoading(true);
-      }
-
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`,
-          {
-            credentials: "include",
-            signal: controller.signal,
-          },
-        );
-
-        if (!res.ok) {
-          setUser(null);
-          return;
-        }
-
-        const data = await res.json();
-        setUser(data.user);
-      } catch (error: unknown) {
-        if (error instanceof DOMException && error.name === "AbortError")
-          return;
-        console.log(error);
+      if(!token){
         setUser(null);
-      } finally {
-        if (!options?.background) {
-          setIsLoading(false);
-        }
+        return;
       }
-    },
-    [],
-  );
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      if(!response.ok){
+        localStorage.removeItem("token");
+        setUser(null);
+        return;
+      }
+
+      const data = await response.json();
+      setUser(data.user);
+    }catch(err){
+      console.error(err);
+      setUser(null);
+    }finally{
+      setIsLoading(false);
+    }
+  }, []);
+
+  // const refreshAuth = useCallback(
+  //   async (options?: { background?: boolean }) => {
+  //     if (refreshController.current) {
+  //       refreshController.current.abort();
+  //     }
+
+  //     const controller = new AbortController();
+  //     refreshController.current = controller;
+
+  //     if (!options?.background) {
+  //       setIsLoading(true);
+  //     }
+
+  //     try {
+  //       const res = await fetch(
+  //         `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`,
+  //         {
+  //           credentials: "include",
+  //           signal: controller.signal,
+  //         },
+  //       );
+
+  //       if (!res.ok) {
+  //         setUser(null);
+  //         return;
+  //       }
+
+  //       const data = await res.json();
+  //       setUser(data.user);
+  //     } catch (error: unknown) {
+  //       if (error instanceof DOMException && error.name === "AbortError")
+  //         return;
+  //       console.log(error);
+  //       setUser(null);
+  //     } finally {
+  //       if (!options?.background) {
+  //         setIsLoading(false);
+  //       }
+  //     }
+  //   },
+  //   [],
+  // );
 
   useEffect(() => {
     refreshAuth();
   }, [refreshAuth]);
 
   // useEffect(() => {
-  //   if (!isLoading && user) {
-  //     refreshAuth({ background: true });
-  //   }
-  // }, [pathname, isLoading, user, refreshAuth]);
-
-  useEffect(() => {
-    return () => {
-      refreshController.current?.abort();
-    };
-  }, []);
+  //   return () => {
+  //     refreshController.current?.abort();
+  //   };
+  // }, []);
 
   const userRegistration = async (data: RegisteredUser) => {
     try {
@@ -115,7 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include",
+          // credentials: "include",
           body: JSON.stringify(data),
         },
       );
@@ -129,11 +158,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
       console.log("log in successful");
-
-      setUser(resData.newUser);
+      localStorage.setItem("token", resData.token);
+      setUser(resData.user);
       return {
         success: true,
-        message: "log in successful",
+        message: resData.msg,
       };
     } catch (error) {
       console.error(error);
@@ -146,9 +175,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = (userData: User) => {
-    setUser(userData);
-  };
+  // const login = (userData: User) => {
+  //   setUser(userData);
+  // };
 
   const userLogin = async (data: UserData) => {
     try {
@@ -160,7 +189,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include",
+          // credentials: "include",
+
           body: JSON.stringify(data),
         },
       );
@@ -177,7 +207,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
 
-      await refreshAuth();
+      // await refreshAuth();
+
+      localStorage.setItem("token", resData.token);
+      setUser(resData.user);
 
       return {
         success: true,
@@ -195,35 +228,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/logout`,
-        {
-          method: "POST",
-          credentials: "include",
-        },
-      );
-      const resData = await response.json();
+    localStorage.removeItem("token");
 
-      if (!response.ok) {
-        const errMsg = resData?.msg;
-        console.log("Logout failed");
-        return { success: false, message: errMsg };
-      }
+    setUser(null);
+    return {
+      success: true,
+      message: "Logged out",
+    };
+    // try {
+    //   const response = await fetch(
+    //     `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/logout`,
+    //     {
+    //       method: "POST",
+    //       credentials: "include",
+    //     },
+    //   );
+    //   const resData = await response.json();
 
-      sessionStorage.removeItem("notes_cache");
-      setUser(null);
+    //   if (!response.ok) {
+    //     const errMsg = resData?.msg;
+    //     console.log("Logout failed");
+    //     return { success: false, message: errMsg };
+    //   }
 
-      return {
-        success: true,
-        message: resData?.msg || "Successfully logged out",
-      };
-    } catch (error) {
-      console.log(error);
-      return { success: false, message: "Server Error" };
-    } finally {
-      setIsLoading(false);
-    }
+    //   sessionStorage.removeItem("notes_cache");
+    //   setUser(null);
+
+    //   return {
+    //     success: true,
+    //     message: resData?.msg || "Successfully logged out",
+    //   };
+    // } catch (error) {
+    //   console.log(error);
+    //   return { success: false, message: "Server Error" };
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   const value: AuthContextType = {
@@ -232,13 +272,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     userRegistration,
     userLogin,
-    login,
+    // login,
     logout,
     refreshAuth,
   };
   return (
     <AuthContext.Provider value={value}>
-      {isLoading ? null : children}
+      {children}
+      {/* {isLoading ? null : children} */}
     </AuthContext.Provider>
   );
 }
