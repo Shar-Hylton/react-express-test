@@ -46,7 +46,7 @@ router.post(
       const newNote = await Note.create({
         title,
         content,
-        user: req.session.user._id,
+        user: req.user._id,
       });
 
       const myNote = await newNote.populate("user", "username email");

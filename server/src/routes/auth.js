@@ -1,9 +1,11 @@
-const express = require('express');
+const express = require("express");
 const User = require("../models/User");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 
+require("dotenv").config();
 
 router.post(
   "/register",
@@ -12,8 +14,10 @@ router.post(
     .isLength({ min: 3, max: 15 })
     .withMessage("Must be between 3-15 characters"),
   body("email")
-    .notEmpty().withMessage("Enter email")
-    .isEmail().withMessage("Enter valid email"),
+    .notEmpty()
+    .withMessage("Enter email")
+    .isEmail()
+    .withMessage("Enter valid email"),
   body("password").notEmpty().withMessage("Enter a strong password"),
   body("password")
     .isLength({ min: 8, max: 32 })
@@ -70,26 +74,37 @@ router.post(
         password: hash,
       });
 
-      console.log(`User created, here are the details:\nUser: ${username}\nEmail:${email}\nPassword: ${hash}`)
-
-      req.session.user = {
+      const safeUser = {
         _id: newUser._id,
         username: newUser.username,
         email: newUser.email,
+        role: newUser.role,
       };
 
-      req.session.success = "Registered Successfully";
-      res.status(201).json({ msg: "Registered Successfully", newUser });
+      const token = jwt.sign(safeUser, process.env.JWT_SECRET, {
+        expiresIn: "1d",
+      });
+
+      console.log(
+        `User created, here are the details:\nUser: ${username}\nEmail:${email}\nPassword: ${hash}`,
+      );
+
+      // req.session.user = {
+      //   _id: newUser._id,
+      //   username: newUser.username,
+      //   email: newUser.email,
+      // };
+
+      // req.session.success = "Registered Successfully";
+      res.status(201).json({ msg: "Registered Successfully", user: safeUser, token });
     } catch (err) {
       console.error(err);
-      res
-        .status(500)
-        .json({
-          errors: "Registration Failed, Please try again",
-          old: req.body 
-    });
+      res.status(500).json({
+        errors: "Registration Failed, Please try again",
+        old: req.body,
+      });
     }
-  }
+  },
 );
 
 router.post(
@@ -112,7 +127,9 @@ router.post(
       const { email, password } = req.body;
 
       // include password explicitly because schema sets `select: false`
-      const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+password');
+      const user = await User.findOne({
+        email: email.trim().toLowerCase(),
+      }).select("+password");
 
       if (!user) {
         return res.status(400).json({
@@ -130,49 +147,78 @@ router.post(
       const match = await bcrypt.compare(password, user.password);
 
       if (!match) {
-        return res.status(400).json({ errors: [{ msg: "Invalid Password" }], old: req.body });
+        return res
+          .status(400)
+          .json({ errors: [{ msg: "Invalid Password" }], old: req.body });
       }
 
       const safeUser = {
         _id: user._id,
         username: user.username,
         email: user.email,
-        role:user.role,
+        role: user.role,
       };
 
-      req.session.user = safeUser;
-      req.session.success = 'Welcome Back!';
-      res.status(200).json({ user: safeUser, msg: 'Log in Successful' });
+      const token = jwt.sign(safeUser, process.env.JWT_SECRET, {
+        expiresIn: "1d",
+      });
 
+      // req.session.user = safeUser;
+      // req.session.success = "Welcome Back!";
+      res.status(200).json({ user: safeUser, token, msg: "Log in Successful" });
     } catch (err) {
       console.error(err);
-      res.status(500).json({errors: [{msg: "Login Failed! Try again later"}], old: req.body})
+      res.status(500).json({
+        errors: [{ msg: "Login Failed! Try again later" }],
+        old: req.body,
+      });
     }
-  }
+  },
 );
 
+// Migrating from session Auth
+
 router.get("/me", (req, res) => {
-  if (!req.session.user){
+  const authHeader = req.headers.authorization;
+
+  if(!authHeader){
     return res.status(401).json({
-      errors: [{msg: "Unauthorized"}],
+      errors: [{ msg: "Unauthorized" }],
     });
   }
 
-  return res.status(200).json({
-    user: req.session.user,
-  });
+  const token = authHeader.split(" ")[1];
+
+  try{
+   const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
+   return res.json({
+    user: decoded,
+   });
+  }catch{
+    return res.status(401).json({
+      errors: [{ msg: "Invalid token" }],
+    });
+  }
+
+  
+  // if (!req.session.user) {
+  //   return res.status(401).json({
+  //     errors: [{ msg: "Unauthorized" }],
+  //   });
+  // }
+
 });
 
-router.post('/logout',(req, res)=>{
-  req.session.destroy((err)=> {
-    if(err) {
-      return res.status(500).json({
-        msg: "Failed to logout"
-      });
-    }
-    res.clearCookie("connect.sid")
-    res.status(200).json({msg: "Logout Successfully"});
-  })
-})
+router.post("/logout", (req, res) => {
+  // req.session.destroy((err) => {
+  //   if (err) {
+  //     return res.status(500).json({
+  //       msg: "Failed to logout",
+  //     });
+  //   }
+  //   res.clearCookie("connect.sid");
+  res.json({ msg: "Logout Successfully" });
+});
 
 module.exports = router;

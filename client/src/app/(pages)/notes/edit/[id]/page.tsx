@@ -17,7 +17,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { useNoteMutations } from "@/Hooks/useNoteMutations";
-
+import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useNotesQuery } from "@/Hooks/useNotesQuery";
 
 type EditNoteForm = {
@@ -87,14 +87,14 @@ export default function EditNote() {
       {
         onSuccess: (res) => {
           toast.success(res.message);
-          router.replace("/notes"); 
+          router.replace("/notes");
         },
         onError: (err) => {
           toast.error(err.message);
         },
-      }
+      },
     );
-  }
+  };
   //   const result = await updateNote(id as string, data);
   //   const success = result.success;
   //   const msg = result.message;
@@ -105,14 +105,30 @@ export default function EditNote() {
 
   //   toast.success(msg);
 
-    
   // };
 
   return (
     <>
-      <Card className="max-w-xl mx-auto mt-10">
+      <Card className=" 
+    relative
+    w-full
+    max-w-xl
+    mx-auto
+    mt-10
+    sm:mt-16
+    lg:mt-20
+    mb-10
+    sm:mb-16
+    px-2
+    sm:px-0 "
+    >
         <CardHeader>
-          <CardTitle>Edit Note</CardTitle>
+          <IoArrowBackCircleOutline
+            size={30}
+            onClick={() => router.push("/notes")}
+            className="absolute left-6 top-6 cursor-pointer text-zinc-600 hover:text-zinc-900 transition-colors"
+          />
+          <CardTitle className="mt-12">Edit Note</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

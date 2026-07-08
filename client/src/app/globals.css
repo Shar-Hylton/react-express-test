@@ -6,6 +6,24 @@ body {
   min-height: 100vh;
 }
 
+/* Toast responsive */
+@media (max-width: 640px) {
+  .Toastify__toast-container {
+    top: auto !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 90% !important;
+    max-width: 400px !important;
+  }
+  
+  .Toastify__toast {
+    font-size: 14px !important;
+    padding: 10px 16px !important;
+    border-radius: 10px !important;
+  }
+}
+
 /* animation Starts */
 
 .text-motion {
@@ -228,10 +246,10 @@ body {
   }
 
   .btn-blue {
-    @apply text-zinc-100 p-5 rounded-2xl bg-blue-500 outline-1 border-2 border-zinc-100 cursor-pointer hover:bg-zinc-600;
+    @apply text-zinc-100 p-5 rounded-2xl bg-blue-500 outline-1 border-2 border-zinc-100 cursor-pointer hover:bg-zinc-600 py-4 md:py-5 mb-4;
   }
   .btn-red {
-    @apply text-zinc-100 p-5 rounded-2xl bg-red-500 outline-1 border-2 border-zinc-100 cursor-pointer hover:bg-zinc-600;
+    @apply text-zinc-100 p-5 rounded-2xl bg-red-500 outline-1 border-2 border-zinc-100 cursor-pointer hover:bg-zinc-600 py-4 md:py-5 mb-4;
   }
    .dialog-btn {
     @apply rounded-full border border-white/40 bg-white/20 backdrop-blur-xl shadow-xl text-slate-900 hover:bg-white/35 hover:scale-105 transition-all;
@@ -249,10 +267,6 @@ body {
   
   & h1{
     @apply text-3xl md:text-6xl;
-  }
-
-  & button{
-    @apply py-4 md:py-5 mb-4;
   }
 
   p {

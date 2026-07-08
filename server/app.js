@@ -45,25 +45,25 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(
-  session({
-    secret: process.env.SECRET_KEY || "Session_hidden_token",
-    resave: false, //don't write unchanged sessions
-    saveUninitialized: false, // Don't save empty sessions
-    store: MongoStore.create({
-      //Defines where sessions are stored
-      mongoUrl: process.env.MONGODBSTRING,
-      collectionName: "sessions",
-      ttl: 2 * 24 * 60 * 60, // ttl: time to live
-    }),
-    cookie: {
-      secure: true, //Set To False For Testing Only and using HTTP in Development. Must change to true when sent over HTTPS
-      httpOnly: true, // Prevents JavaScript from accessing the cookie (reduces XSS risk).
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-      sameSite: "none", //"lax",
-    },
-  }),
-);
+// app.use(
+//   session({
+//     secret: process.env.SECRET_KEY || "Session_hidden_token",
+//     resave: false, //don't write unchanged sessions
+//     saveUninitialized: false, // Don't save empty sessions
+//     store: MongoStore.create({
+//       //Defines where sessions are stored
+//       mongoUrl: process.env.MONGODBSTRING,
+//       collectionName: "sessions",
+//       ttl: 2 * 24 * 60 * 60, // ttl: time to live
+//     }),
+//     cookie: {
+//       secure: true, //Set To False For Testing Only and using HTTP in Development. Must change to true when sent over HTTPS
+//       httpOnly: true, // Prevents JavaScript from accessing the cookie (reduces XSS risk).
+//       maxAge: 24 * 60 * 60 * 1000, // 1 day
+//       sameSite: "none", //"lax",
+//     },
+//   }),
+// );
 
 app.use("/auth", authRoutes);
 app.use("/notes", noteRoutes);

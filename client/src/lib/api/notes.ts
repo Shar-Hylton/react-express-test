@@ -4,8 +4,12 @@ export const getNotes = async (): Promise<Note[]> => {
   const url: string = `${process.env.NEXT_PUBLIC_SERVER_URL}/notes`;
 
   try {
+    const token = localStorage.getItem("token");
     const response = await fetch(url, {
-      credentials: "include", // without this req.session.user._id is undefined
+        headers: {
+        Authorization: `Bearer ${token}`,
+    },
+    //   credentials: "include", // without this req.session.user._id is undefined
     });
     const data = await response.json();
 
@@ -27,13 +31,15 @@ export const getNotes = async (): Promise<Note[]> => {
 // create note
 export const createNote = async (data: { title: string; content: string }) => {
   try {
+    const token = localStorage.getItem("token");
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/notes/add`,
       {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       },
@@ -43,7 +49,9 @@ export const createNote = async (data: { title: string; content: string }) => {
 
     if (!response.ok) {
       const message =
-        resData?.errors?.[0]?.message || resData?.error || "Failed to create note";
+        resData?.errors?.[0]?.msg ||
+        resData?.error ||
+        "Failed to create note";
       console.error(message);
       throw new Error(message);
     }
@@ -56,7 +64,7 @@ export const createNote = async (data: { title: string; content: string }) => {
 };
 
 // UPDATE
-  export const updateNote = async ({
+export const updateNote = async ({
   id,
   data,
 }: {
@@ -66,47 +74,64 @@ export const createNote = async (data: { title: string; content: string }) => {
     content: string;
   };
 }) => {
-   
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/notes/edit/${id}`, {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/notes/edit/${id}`,
+      {
         method: "PUT",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        // credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(data),
-      });
-     
-      const resData = await response.json();
-      
-      if (!response.ok) {
-        const message = resData?.errors?.[0]?.message || resData?.error || "Failed to update note";
-        console.error(message);
-       throw new Error(message);
-      }
-     return resData;
-    } catch (error) {
-      console.error(error);
-      throw error;
+      },
+    );
+
+    const resData = await response.json();
+
+    if (!response.ok) {
+      const message =
+        resData?.errors?.[0]?.msg ||
+        resData?.error ||
+        "Failed to update note";
+      console.error(message);
+      throw new Error(message);
     }
+    return resData;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };
 
 export const deleteNote = async (id: string) => {
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/notes/delete/${id}`, {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/notes/delete/${id}`,
+      {
         method: "DELETE",
-        credentials: "include",
-      });
-      const resData = await response.json();
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    const resData = await response.json();
 
-      if (!response.ok) {
-        const message = resData?.error || resData?.errors[0]?.message || "Failed to delete note";
-        console.error(message);
-        throw new Error(message);
-      }
-
-      return resData;
-    } catch (error) {
-      console.error(error);
-      throw error;
+    if (!response.ok) {
+      const message =
+        resData?.error ||
+        resData?.errors[0]?.msg ||
+        "Failed to delete note";
+      console.error(message);
+      throw new Error(message);
     }
-  };
+
+    return resData;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};

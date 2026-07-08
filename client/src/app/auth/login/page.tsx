@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { validateEmail, validatePassword } from "@/lib/validation";
-import { toast } from 'react-toastify';
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -48,7 +47,6 @@ export default function Login() {
 
     if (!isValid.email || !isValid.password) {
       setTouched({ email: true, password: true });
-      
       return;
     }
 
@@ -72,11 +70,10 @@ export default function Login() {
       return;
     }
 
-    toast.success(result.message)
-
     setForm({ email: "", password: "" });
     setIsLoading(false);
 
+    sessionStorage.setItem("toast", result.message);
     router.replace("/notes");
   };
 
