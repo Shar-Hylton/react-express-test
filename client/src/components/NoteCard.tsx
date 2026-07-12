@@ -78,7 +78,7 @@ export default function NoteCard({
                 group
                 flex
                 flex-col
-                h-120
+                h-125
                 mx-8
                 sm:mx-auto
                 mobile-friendly
@@ -245,7 +245,7 @@ export default function NoteCard({
                 </CardContent>
 
                 {/* CARD FOOTER */}
-                <div className="relative bottom-[-30] mt-auto border-t px-6 py-3 h-30 bg-gray-200">
+                <div className="relative bottom-[-30] mt-auto border-t px-6 h-25 bg-gray-200">
                   <CardDescription className="capitalize">
                     Author: {user?.username || "Unknown"}
                   </CardDescription>
