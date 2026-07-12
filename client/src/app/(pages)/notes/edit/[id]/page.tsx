@@ -10,7 +10,6 @@ import { Input } from "../../../../../components/ui/input";
 import { Textarea } from "../../../../../components/ui/textarea";
 import { Button } from "../../../../../components/ui/button";
 import { useForm, useWatch } from "react-hook-form";
-// import { useNotes } from "../../../../../context/NotesContext";
 import { redirect, useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Spinner } from "@/components/ui/spinner";

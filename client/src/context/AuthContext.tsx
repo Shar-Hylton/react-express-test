@@ -43,30 +43,30 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  // const refreshController = useRef<AbortController | null>(null);
-
+  const deployURL = process.env.NEXT_PUBLIC_SERVER_URL;
+  // const localURL = process.env.NEXT_PUBLIC_SERVER_URL_TEST;
   // Changing from session to JWT
 
   const refreshAuth = useCallback(async () => {
     setIsLoading(true);
 
-    try{
+    try {
       const token = localStorage.getItem("token");
 
-      if(!token){
+      if (!token) {
         setUser(null);
         return;
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`,
+        `${deployURL}/auth/me`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         },
       );
-      if(!response.ok){
+      if (!response.ok) {
         localStorage.removeItem("token");
         setUser(null);
         return;
@@ -74,13 +74,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const data = await response.json();
       setUser(data.user);
-    }catch(err){
+    } catch (err) {
       console.error(err);
       setUser(null);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [deployURL]);
 
   // const refreshAuth = useCallback(
   //   async (options?: { background?: boolean }) => {
@@ -138,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const userRegistration = async (data: RegisteredUser) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/register`,
+        `${deployURL}/auth/register`,
         {
           method: "POST",
           headers: {
@@ -170,20 +170,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         success: false,
         message: "System Failure, try again later. ",
       };
-    } finally {
-      setIsLoading(false);
     }
   };
-
-  // const login = (userData: User) => {
-  //   setUser(userData);
-  // };
 
   const userLogin = async (data: UserData) => {
     try {
       console.log("Submitting login request");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`,
+        `${deployURL}/auth/login`,
         {
           method: "POST",
           headers: {
@@ -222,8 +216,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         success: false,
         message: "System Failure, try again later.",
       };
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -235,6 +227,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       success: true,
       message: "Logged out",
     };
+
+    // Old Session Log out
     // try {
     //   const response = await fetch(
     //     `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/logout`,
@@ -272,7 +266,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     userRegistration,
     userLogin,
-    // login,
     logout,
     refreshAuth,
   };

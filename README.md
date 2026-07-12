@@ -54,6 +54,10 @@ In this practice project, I will be creating an Express Server with secured endp
 
 `useForm hook actually has useWatch() which watches and checks the users input`
 
+- One glitch that also did bug me, was the fact that if log in or registration was successful, the toast maybe triggered before I actually got routed to the "/notes" page.
+
+`This was fixed by using session-storage to store the key: toast, value: message. then on the page where toast message should be seen we use getItem(KEY) as the cb for toast.success(). Then we remove the session immediately after the call. This works perfectly.`
+
 # Learning Outcome
 
 - I have learnt Many things from this project, especially when facing different challenges with this project.

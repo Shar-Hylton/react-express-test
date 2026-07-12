@@ -49,7 +49,7 @@ export default function Home() {
       <div className=" flex mt-8 h-10">
         <Button
           variant="none"
-          className="btn-blue btn-float my-4 mx-auto items-center justify-center"
+          className="btn-blue mb-4 btn-float my-4 mx-auto items-center justify-center"
           onClick={handleClick}
         >
           

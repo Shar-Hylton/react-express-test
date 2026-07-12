@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-
 import { AuthProvider } from "../context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "./globals.css";
@@ -33,12 +32,10 @@ export default function RootLayout({
       >
         {" "}
         <AuthProvider>
-          <Providers>
-            {/* <NotesProvider> */}
+          <Providers>  
               {children}
               {/* <Toaster richColors position="bottom-right" /> */}
               <ToastContainer aria-label={"notification"} className={"mt-20"} />
-            {/* </NotesProvider> */}
           </Providers>
         </AuthProvider>
       </body>
