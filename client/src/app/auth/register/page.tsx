@@ -26,7 +26,6 @@ import { TiArrowBackOutline } from "react-icons/ti";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Register() {
-  const { isLoading, userRegistration } = useAuth();
 
   type UserData = {
     username: string;
@@ -60,6 +59,8 @@ export default function Register() {
     confirmPassword?: boolean;
   }>({});
 
+  const { userRegistration } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const passwordMsg = isValid.password?.message;
@@ -67,30 +68,35 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setIsLoading(true);
     setError("");
 
     if (form.password !== form.confirmPassword) {
       setError("Passwords do not match");
+      setIsLoading(false);
       return;
     }
 
     if (!form.username.trim()) {
       setError("Enter your username");
+      setIsLoading(false);
       return;
     }
     if (!form.email.trim()) {
       setError("Enter your email");
+      setIsLoading(false);
       return;
     }
 
     if (!form.password.trim()) {
       setError("Enter your password");
+      setIsLoading(false);
       return;
     }
 
     if (!form.confirmPassword.trim()) {
       setError("Enter confirm password");
+      setIsLoading(false);
       return;
     }
 
@@ -99,9 +105,11 @@ export default function Register() {
     if (!result.success) {
       setForm({ ...form, password: "", confirmPassword: "" });
       setError(result.message);
+      setIsLoading(false);
       return;
     }
     setForm({ email: "", username: "", password: "", confirmPassword: "" });
+    setIsLoading(false);
     sessionStorage.setItem("toast", result.message);
     router.replace("/notes");
   };

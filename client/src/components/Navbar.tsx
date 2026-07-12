@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/button";
 import { RiQuillPenAiLine } from "react-icons/ri";
-
 import { FaCircleUser } from "react-icons/fa6";
 import { toast } from "react-toastify";
 
@@ -80,7 +79,7 @@ export default function Navbar() {
             <Button
               onClick={handleLogOut}
               disabled={isLoading}
-              className="text-sm/6 font-semibold btn-blue p-5 rounded-md"
+              className="text-sm/6 font-semibold btn-blue"
             >
               {isLoading ? "Signing out..." : "Log out"}
             </Button>
@@ -93,12 +92,6 @@ export default function Navbar() {
               <FaCircleUser color={"gray"} aria-details="log in" size={30} />
             </Link>
 
-            {/* <Link
-              href="/auth/register"
-              className="text-sm/6 font-semibold text-gray-50 bg-blue-700 py-3 px-6 rounded-md"
-            >
-              Register <span aria-hidden="true">&rarr;</span>
-            </Link> */}
             </>
           
         )}

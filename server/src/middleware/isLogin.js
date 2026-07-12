@@ -1,3 +1,4 @@
+// Old Session Method
 // module.exports = (req, res, next)=>{
 //     if(!req.session || !req.session.user){
 //         req.session.error = 'Please log in or register to edit or delete note';

@@ -35,4 +35,9 @@ Import chevron for back redirect or FaUser, FaSignInAlt, FaSignOutAlt, FaBuildin
 * TanStack/react-query
 =======================
 
-npm i @tanstack/react-query
+- npm i @tanstack/react-query
+
+* JWT installment
+=======================
+
+- npm i jsonwebtoken

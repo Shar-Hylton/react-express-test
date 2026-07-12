@@ -5,7 +5,7 @@ const owner = require("../middleware/owner");
 const ensureLogin = require("../middleware/isLogin");
 const { body, validationResult } = require("express-validator");
 
-router.get("/", async (req, res) => {
+router.get("/", ensureLogin, async (req, res) => {
   try {
     const query = req.query.q || ""; // Gets the query from url
     // new RegExp: tells mongodb to find titles that matches query; i means case in-sensitive

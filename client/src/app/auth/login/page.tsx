@@ -47,16 +47,19 @@ export default function Login() {
 
     if (!isValid.email || !isValid.password) {
       setTouched({ email: true, password: true });
+      setIsLoading(false);
       return;
     }
 
     if (!form.password.trim()) {
      setError("Enter your password");
+     setIsLoading(false);
       return;
     }
 
     if (!form.email.trim()) {
       setError("Enter your email");
+      setIsLoading(false);
       return; 
     }
     
