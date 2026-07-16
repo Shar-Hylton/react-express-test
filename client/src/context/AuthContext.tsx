@@ -10,7 +10,6 @@ import {
 } from "react";
 
 import type { User, LoginCredentials, RegisterCredentials } from "@/types/dataTypes";
-import { USERNAME_REGEX } from "@/lib/validation";
 
 type AuthContextType = {
   user: User | null;
