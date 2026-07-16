@@ -4,15 +4,23 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
+const { sanitizeText } = require("../lib/validation/sanitize");
 
 require("dotenv").config();
 
 router.post(
   "/register",
-  body("username").notEmpty().withMessage("Enter your username"),
+  body("username")
+    .customSanitizer(value => sanitizeText(value))
+    .notEmpty()
+    .withMessage("Enter your username"),
   body("username")
     .isLength({ min: 3, max: 15 })
     .withMessage("Must be between 3-15 characters"),
+  body("username")
+    .trim()
+    .matches(/^[A-Za-z0-9._-]+$/)
+    .withMessage("Username may only contain [letters, numbers, periods,underscores and hyphens]."),
   body("email")
     .notEmpty()
     .withMessage("Enter email")
@@ -109,12 +117,12 @@ router.post(
 
 router.post(
   "/login/",
-  body("email")
+  body("identifier")
     .notEmpty()
-    .withMessage("Enter Your Email")
-    .isEmail()
-    .withMessage("Invalid Email Entered"),
-  body("password").notEmpty().withMessage("Enter Your Password"),
+    .withMessage("Enter Email/Username"),
+  body("password")
+    .notEmpty()
+    .withMessage("Enter Your Password"),
 
   async (req, res) => {
     const errors = validationResult(req);
@@ -124,24 +132,21 @@ router.post(
     }
 
     try {
-      const { email, password } = req.body;
-
+      const { identifier, password } = req.body;
+      const value =  identifier.trim().toLowerCase();
       // include password explicitly because schema sets `select: false`
       const user = await User.findOne({
-        email: email.trim().toLowerCase(),
+        $or:[
+            {email: value},
+            {username: value},
+        ],     
       }).select("+password");
 
       if (!user) {
         return res.status(400).json({
-          errors: [{ msg: "Invalid Email or Password" }],
+          errors: [{ msg: "Invalid Credentials" }],
           old: req.body,
         });
-      }
-
-      if (user.email !== email.trim().toLowerCase()) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: "Email doesn't exists" }] });
       }
 
       const match = await bcrypt.compare(password, user.password);

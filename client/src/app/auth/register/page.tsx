@@ -24,22 +24,18 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { TiArrowBackOutline } from "react-icons/ti";
 import { useAuth } from "@/context/AuthContext";
+import { RegisterCredentials } from "@/types/dataTypes";
+import { USERNAME_REGEX } from "@/lib/validation";
 
 export default function Register() {
 
-  type UserData = {
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  };
 
   type ValidationResult = {
     success: boolean;
     message?: string;
   };
 
-  const [form, setForm] = useState<UserData>({
+  const [form, setForm] = useState<RegisterCredentials>({
     username: "",
     email: "",
     password: "",
@@ -82,6 +78,14 @@ export default function Register() {
       setIsLoading(false);
       return;
     }
+
+    if(!USERNAME_REGEX.test(form.username)){
+      setError("Invalid user inputs [letters, numbers, hyphens and underscores are accepted]");
+      setIsLoading(false);
+      setForm({...form, username:""});
+      return;
+    }
+
     if (!form.email.trim()) {
       setError("Enter your email");
       setIsLoading(false);
@@ -159,7 +163,7 @@ export default function Register() {
               />
               {touched.username && !isValid.username && (
                 <p className="text-sm text-red-500">
-                  Must be more than 3 characters
+                  Must be 4 - 15 characters (Letters, Numbers, hyphens, periods and dashes). 
                 </p>
               )}
             </div>

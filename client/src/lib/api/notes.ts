@@ -16,7 +16,7 @@ export const getNotes = async (): Promise<Note[]> => {
     console.log("Response received: ", response.status);
 
     if (!response.ok) {
-      const message = data?.errors[0]?.msg ?? "No notes yet";
+      const message = data?.errors?.[0]?.msg ?? "No notes yet";
       console.error(message);
       throw new Error(message);
     }
@@ -125,7 +125,7 @@ export const deleteNote = async (id: string) => {
         resData?.error ||
         resData?.errors[0]?.msg ||
         "Failed to delete note";
-      console.error(message);
+      // console.error(message);
       throw new Error(message);
     }
 
