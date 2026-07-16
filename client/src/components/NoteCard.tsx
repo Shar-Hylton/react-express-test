@@ -128,9 +128,11 @@ export default function NoteCard({
                     <p
                       className="
                        text-sm
+                       sm:text-md
                        text-gray-700
                        whitespace-pre-wrap
                        overflow-hidden
+                       bg-red-600
                       "
                       style={{
                         display: "-webkit-box",
