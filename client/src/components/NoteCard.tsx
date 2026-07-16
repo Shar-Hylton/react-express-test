@@ -132,7 +132,6 @@ export default function NoteCard({
                        text-gray-700
                        whitespace-pre-wrap
                        overflow-hidden
-                       bg-red-600
                       "
                       style={{
                         display: "-webkit-box",
