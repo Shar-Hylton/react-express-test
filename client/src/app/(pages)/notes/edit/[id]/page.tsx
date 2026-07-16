@@ -18,6 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useNoteMutations } from "@/Hooks/useNoteMutations";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { useNotesQuery } from "@/Hooks/useNotesQuery";
+import { sanitizeInput } from "@/lib/validation";
 
 type EditNoteForm = {
   title: string;
@@ -81,8 +82,14 @@ export default function EditNote() {
     );
 
   const onSubmit = async (data: EditNoteForm) => {
+    
+    const sanitizedData = {
+      title: sanitizeInput(data.title),
+      content: sanitizeInput(data.content),
+    }
+    
     updateMutation.mutate(
-      { id: id as string, data },
+      { id: id as string, data: sanitizedData },
       {
         onSuccess: (res) => {
           toast.success(res.message);
@@ -108,19 +115,22 @@ export default function EditNote() {
 
   return (
     <>
-      <Card className=" 
-    relative
-    w-full
-    max-w-xl
-    mx-auto
-    mt-10
-    sm:mt-16
-    lg:mt-20
-    mb-10
-    sm:mb-16
-    px-2
-    sm:px-0 "
-    >
+      <Card
+        className=" 
+          w-xs 
+          md:w-md  
+          relative
+          max-w-sm
+          sm:max-w-xl
+          mx-auto
+          mt-10
+          sm:mt-16
+          lg:mt-20
+          mb-24
+          sm:mb-16
+          px-2
+          sm:px-0 "
+      >
         <CardHeader>
           <IoArrowBackCircleOutline
             size={30}
@@ -144,12 +154,13 @@ export default function EditNote() {
                     value: 50,
                     message: "Can't exceed 50 characters",
                   },
+                  setValueAs: (value) => sanitizeInput(value),
                 })}
               />
 
               {titleValue > 0 && (
                 <span
-                  className={`absolute bottom-1 right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground ${titleValue < 15 ? "text-red-600" : ""}`}
+                  className={`flex justify-end text-xs text-muted-foreground mt-1 ${titleValue < 15 ? "text-red-600" : ""}`}
                 >
                   {titleValue}/50
                 </span>
@@ -168,6 +179,7 @@ export default function EditNote() {
                     value: 1024,
                     message: "Can't exceed 1024 characters",
                   },
+                  setValueAs: (value) => sanitizeInput(value),
                 })}
               />
 

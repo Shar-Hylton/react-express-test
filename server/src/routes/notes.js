@@ -4,6 +4,7 @@ const Note = require("../models/Note");
 const owner = require("../middleware/owner");
 const ensureLogin = require("../middleware/isLogin");
 const { body, validationResult } = require("express-validator");
+const { sanitizeInput, cleanText } = require("../lib/validation/sanitize"); 
 
 router.get("/", ensureLogin, async (req, res) => {
   try {
@@ -16,7 +17,9 @@ router.get("/", ensureLogin, async (req, res) => {
 
     return res.status(200).json({ notes });
   } catch (error) {
-    return res.status(500).json({ errors: [{message: "Failed to fetch notes" }]});
+    return res
+      .status(500)
+      .json({ errors: [{ message: "Failed to fetch notes" }] });
   }
 });
 
@@ -24,11 +27,15 @@ router.post(
   "/add",
   ensureLogin,
   body("title")
+    .customSanitizer(value => cleanText(sanitizeInput(value)))
+    .trim()
     .notEmpty()
     .withMessage("Enter Title")
     .isLength({ min: 15, max: 50 })
     .withMessage("Must be between 15-50 words limit."),
   body("content")
+    .customSanitizer(value => cleanText(sanitizeInput(value))) 
+    .trim()
     .notEmpty()
     .withMessage("Enter content")
     .isLength({ min: 250, max: 1024 })
@@ -40,7 +47,7 @@ router.post(
       return res.status(400).json({ errors: errors.array(), old: req.body });
     }
 
-    const {title, content} = req.body;
+    const { title, content } = req.body;
 
     try {
       const newNote = await Note.create({
@@ -51,15 +58,16 @@ router.post(
 
       const myNote = await newNote.populate("user", "username email");
 
-      return res.status(201).json({message: "note created successfully", myNote});
-      
+      return res
+        .status(201)
+        .json({ message: "note created successfully", myNote });
     } catch (error) {
       console.log(error);
       return res
         .status(500)
         .json({ errors: [{ message: " Failed to add note" }], old: req.body });
     }
-  }
+  },
 );
 
 router.put(
@@ -67,11 +75,15 @@ router.put(
   ensureLogin,
   owner,
   body("title")
+    .customSanitizer(value => cleanText(sanitizeInput(value)))
+    .trim()
     .notEmpty()
     .withMessage("Enter title")
     .isLength({ min: 15, max: 50 })
     .withMessage("Must be within 15-50 words limit"),
   body("content")
+    .customSanitizer(value=> cleanText(sanitizeInput(value)))
+    .trim()
     .notEmpty()
     .withMessage("Enter Content")
     .isLength({ min: 250, max: 1024 })
@@ -84,13 +96,13 @@ router.put(
 
     const note = await Note.findById(req.params.id);
 
-    if (!note) return res.status(404).json({ errors: [{ message: "Note not found" }] });
+    if (!note)
+      return res.status(404).json({ errors: [{ message: "Note not found" }] });
 
-    const {title, content} = req.body;
- 
-    try{
-      const isUnchanged =
-        note.title === title && note.content === content;
+    const { title, content } = req.body;
+
+    try {
+      const isUnchanged = note.title === title && note.content === content;
 
       if (isUnchanged) {
         return res.status(200).json({
@@ -98,32 +110,39 @@ router.put(
           message: "No changes detected",
         });
       }
-        const updatedNote = await Note.findByIdAndUpdate(req.params.id, 
-            {title, content},
-            {new: true}
-        ).populate("user", "username email");
-        console.log("note updated: ", JSON.stringify(updatedNote))
-        return res.status(200).json({updatedNote, message: "Note updated Successfully"});
-    }catch(error){
-        return res.status(500).json({errors: [{message: "Failed to update note"}]})
+      const updatedNote = await Note.findByIdAndUpdate(
+        req.params.id,
+        { title, content },
+        { new: true },
+      ).populate("user", "username email");
+      console.log("note updated: ", JSON.stringify(updatedNote));
+      return res
+        .status(200)
+        .json({ updatedNote, message: "Note updated Successfully" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ errors: [{ message: "Failed to update note" }] });
     }
-  }
+  },
 );
 
-router.delete('/delete/:id',ensureLogin, owner, async (req,res)=>{
-    const note = await Note.findById(req.params.id)
+router.delete("/delete/:id", ensureLogin, owner, async (req, res) => {
+  const note = await Note.findById(req.params.id);
 
-    if(!note) return res.status(404).json({errors: [{message: "Note not found"}]});
+  if (!note)
+    return res.status(404).json({ errors: [{ message: "Note not found" }] });
 
-    try{
-        await Note.findByIdAndDelete(req.params.id);
-        console.log("note deleted: ", JSON.stringify(note))
-        return res.status(200).json({message: "Note deleted successfully!"});
-
-    }catch(error){
-        console.log(error);
-        return res.status(500).json({errors: [{message: "Failed to delete note"}]})
-    }
-})
+  try {
+    await Note.findByIdAndDelete(req.params.id);
+    console.log("note deleted: ", JSON.stringify(note));
+    return res.status(200).json({ message: "Note deleted successfully!" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ errors: [{ message: "Failed to delete note" }] });
+  }
+});
 
 module.exports = router;

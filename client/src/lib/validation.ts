@@ -1,5 +1,16 @@
 import { validPasswordMsg } from "@/constants";
 
+// notes validation
+export const USERNAME_REGEX = /^[A-Za-z0-9._ -]+$/;
+
+export function sanitizeInput(value: string) {
+  return value
+    .normalize("NFKC")
+    .replace(/\p{Cf}/gu, "")
+    // .replace(/\p{Extended_Pictographic}/gu, "")
+    .trim();
+}
+
 export function validateEmail(email: string): boolean {
     if (!email.trim()) return false;
     const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -19,7 +30,7 @@ export function validatePassword (password: string): {success: boolean, message?
 export function validateUsername (username: string): boolean {
     if (!username) return false;
     if (username.length <= 3 || username.length > 15 ) return false;
-
+    if (!USERNAME_REGEX.test(username)) return false;
     return true;
   };
 

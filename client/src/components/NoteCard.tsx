@@ -172,7 +172,7 @@ export default function NoteCard({
                            bottom-4
                            left-1/2
                            -translate-x-1/2
-                           z-20
+                           z-10
                            lg:hidden
                           "
                         >
@@ -245,8 +245,8 @@ export default function NoteCard({
                 </CardContent>
 
                 {/* CARD FOOTER */}
-                <div className="relative bottom-[-30] mt-auto border-t px-6 h-25 bg-gray-200">
-                  <CardDescription className="capitalize">
+                <div className="relative bottom-[-30] mt-auto border-t px-6 h-30 bg-gray-200">
+                  <CardDescription className="capitalize py-2">
                     Author: {user?.username || "Unknown"}
                   </CardDescription>
 
@@ -305,7 +305,7 @@ export default function NoteCard({
                 relative
                 flex
                 flex-col
-                h-120
+                h-125
                 cursor-pointer
               "
               onClick={() => setIsFlipped(false)}

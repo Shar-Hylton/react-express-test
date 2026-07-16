@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { validateEmail, validatePassword } from "@/lib/validation";
+import { validatePassword } from "@/lib/validation";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -16,28 +16,25 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { TiArrowBackOutline } from "react-icons/ti";
+import { LoginCredentials } from "@/types/dataTypes";
 
-type UserData = {
-  email:string,
-  password:string
-}
 
 export default function Login() {
-  const [form, setForm] = useState<UserData>({ email: "", password: "" });
+  const [form, setForm] = useState<LoginCredentials>({ identifier: "", password: "" });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<{
-    email?: boolean;
+    identifier?: boolean;
     password?: boolean;
   }>({});
   const [touched, setTouched] = useState<{
-    email?: boolean;
+    // identifier?: boolean;
     password?: boolean;
   }>({});
 
   const { userLogin } = useAuth();
 
-  const isEnabled = isValid.email && isValid.password && !isLoading;
+  const isEnabled = isValid.password && !isLoading;
 
   const router = useRouter();
 
@@ -45,8 +42,8 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!isValid.email || !isValid.password) {
-      setTouched({ email: true, password: true });
+    if (!isValid.password) {
+      setTouched({ password: true });
       setIsLoading(false);
       return;
     }
@@ -57,8 +54,8 @@ export default function Login() {
       return;
     }
 
-    if (!form.email.trim()) {
-      setError("Enter your email");
+    if (!form.identifier.trim()) {
+      setError("Enter your email/username");
       setIsLoading(false);
       return; 
     }
@@ -73,7 +70,7 @@ export default function Login() {
       return;
     }
 
-    setForm({ email: "", password: "" });
+    setForm({ identifier: "", password: "" });
     setIsLoading(false);
 
     sessionStorage.setItem("toast", result.message);
@@ -99,36 +96,36 @@ export default function Login() {
         </CardHeader>
         <CardContent>
           <form className="space-y-5" onSubmit={handleSubmit} noValidate>
-            {/* email */}
+            {/* identifier */}
             <div>
-              <Label htmlFor="email" className="text-zinc-300">
-                Email
+              <Label htmlFor="identifier" className="text-zinc-300">
+               Email/Username
               </Label>
               <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="email"
-                value={form.email}
+                id="identifier"
+                name="identifier"
+                type="text"
+                placeholder="Enter your email or username"
+                value={form.identifier}
                 onChange={(e) => {
-                  setForm({ ...form, email: e.target.value });
-                  setIsValid({
-                    ...isValid,
-                    email: validateEmail(e.target.value),
-                  });
+                  setForm({ ...form, identifier: e.target.value });
+                  // setIsValid({
+                  //   ...isValid,
+                  //   identifier: validateEmail(e.target.value),
+                  // });
                   setError("");
                 }}
-                onBlur={() => {
-                  setTouched({ ...touched, email: true });
-                }}
+                // onBlur={() => {
+                //   setTouched({ ...touched, identifier: true });
+                // }}
                 className="bg-zinc-950 mt-2 border-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-zinc-600"
                 required
               />
-              {touched.email && !isValid.email && (
+              {/* {touched.identifier && !isValid.identifier && (
                 <p className="text-sm mt-1 ml-2 text-red-500">
-                  Enter valid email
+                  Enter valid username or email
                 </p>
-              )}
+              )} */}
             </div>
 
             {/* Password */}
@@ -190,7 +187,7 @@ export default function Login() {
               href="/"
               className="flex justify-center text-white underline-offset-4 hover:underline mt-4"
             >
-              <TiArrowBackOutline size={24}/>{" "} Go Back
+              <TiArrowBackOutline size={24}/>{" "} Home
             </Link>
         </CardContent>
       </Card>

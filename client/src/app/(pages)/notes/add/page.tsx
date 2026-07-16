@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { useNoteMutations } from "@/Hooks/useNoteMutations";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { sanitizeInput } from "@/lib/validation";
 
 type NoteFormData = {
   title: string;
@@ -38,7 +39,13 @@ export default function AddNote() {
   const contentValue = useWatch({ control, name: "content" })?.length || 0;
 
   const onSubmit = async (data: NoteFormData) => {
-    createMutation.mutate(data, {
+
+    const sanitizedData = {
+      title: sanitizeInput(data.title),
+      content: sanitizeInput(data.content),
+    };
+
+    createMutation.mutate(sanitizedData, {
       onSuccess: (res) => {
         toast.success(res.message);
         router.replace("/notes");
@@ -79,6 +86,7 @@ export default function AddNote() {
                     value: 50,
                     message: "Can't exceed 50 characters",
                   },
+                  setValueAs: (value) => sanitizeInput(value),
                 })}
               />
 
@@ -110,6 +118,7 @@ export default function AddNote() {
                     value: 1024,
                     message: "Can't exceed 1024 characters",
                   },
+                  setValueAs: (value) => sanitizeInput(value),
                 })}
               />
               {contentValue > 0 && (

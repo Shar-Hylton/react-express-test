@@ -78,9 +78,9 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
         >
           <Card
             className="
-            relative
+             relative
              w-225
-             max-w-[70vw]
+             max-w-[90vw]
              sm:max-w-[50vw]
              md:max-w-[40vw]
              max-h-[70vh]
@@ -98,9 +98,8 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
               size="icon"
               className="
               absolute
-              top-2
-              right-2
-              sm:top-1
+              top-1
+              right-6
               sm:right-1
               md:top-3
               md:right-3
@@ -113,7 +112,7 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
             >
               <X size={20} />
             </Button>
-            <CardHeader className="border-b">
+            <CardHeader className="flex justify-center mx-2 border-b">
               <CardTitle className="text-2xl text-center">
                 {note.title}
               </CardTitle>

@@ -167,7 +167,7 @@ export default function Navbar() {
                       className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-800 hover:bg-gray-50"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      register
+                      Register
                     </Link>
                   </>
                 )}

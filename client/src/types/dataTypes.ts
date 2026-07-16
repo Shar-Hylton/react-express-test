@@ -5,6 +5,15 @@ type User = {
   role: "user" | "admin";
 };
 
+type LoginCredentials = {
+  identifier: string;
+  password: string;
+};
+type RegisterCredentials = Pick<User, "username" | "email"> & {
+  password: string;
+  confirmPassword: string;
+};
+
 type Note = {
   _id: string;
   title: string;
@@ -14,7 +23,4 @@ type Note = {
   updatedAt: string;
 };
 
-export type {
-    User,
-    Note,
-}
+export type { User, LoginCredentials, RegisterCredentials, Note };

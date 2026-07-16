@@ -7,32 +7,20 @@ import {
   useState,
   ReactNode,
   useCallback,
-  // useRef,
 } from "react";
 
-import type { User } from "@/types/dataTypes";
-
-type UserData = {
-  email: string;
-  password: string;
-};
-
-type RegisteredUser = {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+import type { User, LoginCredentials, RegisterCredentials } from "@/types/dataTypes";
+import { USERNAME_REGEX } from "@/lib/validation";
 
 type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   userRegistration: (
-    userData: RegisteredUser,
+    userData: RegisterCredentials,
   ) => Promise<{ success: boolean; message: string }>;
   // login: (userData: User) => void;
-  userLogin: (data: UserData) => Promise<{ success: boolean; message: string }>;
+  userLogin: (data: LoginCredentials) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<{ success: boolean; message: string }>;
   // refreshAuth: (options?: { background?: boolean }) => Promise<void>;
   refreshAuth: () => Promise<void>;
@@ -43,8 +31,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  const test = true;
   const deployURL = process.env.NEXT_PUBLIC_SERVER_URL;
-  // const localURL = process.env.NEXT_PUBLIC_SERVER_URL_TEST;
+  const localURL = process.env.NEXT_PUBLIC_SERVER_URL_TEST;
+  const url = test ? localURL : deployURL;
   // Changing from session to JWT
 
   const refreshAuth = useCallback(async () => {
@@ -59,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const response = await fetch(
-        `${deployURL}/auth/me`,
+        `${url}/auth/me`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -80,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [deployURL]);
+  }, [url]);
 
   // const refreshAuth = useCallback(
   //   async (options?: { background?: boolean }) => {
@@ -135,10 +126,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   //   };
   // }, []);
 
-  const userRegistration = async (data: RegisteredUser) => {
+  const userRegistration = async (data: RegisterCredentials) => {
     try {
       const response = await fetch(
-        `${deployURL}/auth/register`,
+        `${url}/auth/register`,
         {
           method: "POST",
           headers: {
@@ -173,11 +164,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const userLogin = async (data: UserData) => {
+  const userLogin = async (data: LoginCredentials) => {
     try {
       console.log("Submitting login request");
       const response = await fetch(
-        `${deployURL}/auth/login`,
+        `${url}/auth/login`,
         {
           method: "POST",
           headers: {
