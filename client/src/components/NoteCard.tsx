@@ -129,7 +129,7 @@ export default function NoteCard({
                        text-sm
                        text-gray-700
                        whitespace-pre-wrap
-                       text-justify
+                     
                        overflow-hidden
                       "
                       style={{
