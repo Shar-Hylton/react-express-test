@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  const test = true;
+  const test = false;
   const deployURL = process.env.NEXT_PUBLIC_SERVER_URL;
   const localURL = process.env.NEXT_PUBLIC_SERVER_URL_TEST;
   const url = test ? localURL : deployURL;

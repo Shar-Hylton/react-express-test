@@ -340,10 +340,10 @@ export default function NoteCard({
                   <p>{user?.username || "Unknown"}</p>
                 </div>
 
-                <div>
+                {/* <div>
                   <strong>Email</strong>
                   <p>{user?.email || "Unknown"}</p>
-                </div>
+                </div> */}
 
                 <div>
                   <strong>Word Count</strong>
