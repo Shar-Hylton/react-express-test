@@ -269,9 +269,9 @@ body {
     @apply text-3xl md:text-6xl;
   }
 
-  p {
+  /* p {
     @apply text-pretty hyphens-auto;
-  }
+  } */
 }
 
 }
