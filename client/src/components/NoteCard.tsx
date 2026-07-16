@@ -115,6 +115,7 @@ export default function NoteCard({
                     relative
                     overflow-hidden
                     min-h-0
+                    mt-2
                     "
                 >
                   <div
@@ -129,7 +130,6 @@ export default function NoteCard({
                        text-sm
                        text-gray-700
                        whitespace-pre-wrap
-                     
                        overflow-hidden
                       "
                       style={{
@@ -307,6 +307,7 @@ export default function NoteCard({
                 flex-col
                 h-125
                 cursor-pointer
+                mx-8
               "
               onClick={() => setIsFlipped(false)}
             >
@@ -315,8 +316,8 @@ export default function NoteCard({
                 size="icon"
                 className="
                   absolute
-                  right-3
-                  top-3
+                  right-0
+                  top-0
                   z-20
                   cursor-pointer
                 "
