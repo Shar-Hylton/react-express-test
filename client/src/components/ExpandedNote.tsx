@@ -27,7 +27,7 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
         fixed
         inset-0
         z-40
-      bg-black/30
+       bg-black/30
         backdrop-blur-xl
         "
         initial={{
@@ -51,7 +51,7 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
       <div className="mobile-friendly fixed inset-0 z-40  flex items-center justify-center p-8 pointer-events-none">
         <motion.div
           layoutId={`note-${note._id}`}
-           className="rounded-3xl overflow-hidden pointer-events-auto"
+          className="rounded-3xl overflow-hidden pointer-events-auto"
           initial={{
             scale: 0.92,
             opacity: 0,
@@ -79,7 +79,6 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
           <Card
             className="
              relative
-             w-225
              max-w-[90vw]
              sm:max-w-[50vw]
              md:max-w-[40vw]
@@ -99,10 +98,7 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
               className="
               absolute
               top-1
-              right-6
-              sm:right-1
-              md:top-3
-              md:right-3
+              right-1
               z-10
               rounded-full
               cursor-pointer
@@ -124,9 +120,11 @@ export default function ExpandedNote({ note, onClose }: ExpandedNoteProps) {
              overflow-y-auto
              custom-scrollbar
              py-2
+           
+
              "
             >
-              <p className="leading-8 whitespace-pre-wrap text-justify">
+              <p className="w-full leading-8 whitespace-pre-wrap text-justify wrap-break-word">
                 {note.content}
               </p>
             </CardContent>
